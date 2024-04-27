@@ -1,0 +1,3 @@
+D6 (invent one) - 10 (Arduino Uno)
+D5 (invent one) - 11 (Arduino Uno)
+Gnd (invent one)  - Gnd (Arduino Uno)
