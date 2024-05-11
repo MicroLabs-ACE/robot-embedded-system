@@ -2,12 +2,24 @@ var gamepadControllers;
 var controllerDevice = 0;
 var gamepadIndex = 0;
 
+const ipAddress = "192.168.4.1";
+
 const Direction = {
   FORWARD: 4,
   BACKWARD: 6,
   RIGHT: 1,
   LEFT: 3,
 };
+
+function move(commands) {
+  fetch(`http://${ipAddress}/move`, {
+    method: "POST",
+    body: JSON.stringify(commands),
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+}
 
 function listGamepads() {
   gamepadControllers = [];
@@ -29,20 +41,25 @@ function listGamepads() {
 
 function gamepadController() {
   let gamepad = navigator.getGamepads()[gamepadIndex];
+  let dirNorthSouth = 0;
+  let dirEastWest = 0;
+
   if (gamepad) {
     let buttons = gamepad.buttons;
     if (buttons[Direction.FORWARD].pressed) {
-      console.log("Forward");
+      dirNorthSouth = 1;
     }
     if (buttons[Direction.BACKWARD].pressed) {
-      console.log("Backward");
+      dirNorthSouth = -1;
     }
     if (buttons[Direction.RIGHT].pressed) {
-      console.log("Right");
+      dirEastWest = 1;
     }
     if (buttons[Direction.LEFT].pressed) {
-      console.log("Left");
+      dirEastWest = -1;
     }
+
+    console.log([dirNorthSouth, dirEastWest]);
   }
 }
 

@@ -1,26 +1,6 @@
-//Master read and write
-#include <Wire.h>
-
 void setup() {
-  Wire.begin(); // join i2c bus (address optional for master)
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println("Initialised.");
 }
 
-byte x = 0;
-
-void loop() {
-  Wire.beginTransmission(8); // transmit to device #8
-  Wire.write("value: ");        // sends five bytes
-  Wire.write(x);              // sends one byte
-  Wire.endTransmission();    // stop transmitting
-
-  x++;
-  delay(500);
-  Wire.requestFrom(8, 8);    // request 8 bytes from slave device #8
-  while (Wire.available()) { // slave may send less than requested
-    char c = Wire.read(); // receive a byte as character
-    Serial.print(c);         // print the character
-  }
-  Serial.println();
-  delay(100);
-}
+void loop() {}

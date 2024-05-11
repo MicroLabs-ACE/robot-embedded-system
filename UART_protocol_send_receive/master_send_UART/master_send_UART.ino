@@ -1,7 +1,5 @@
 #include <SoftwareSerial.h>
 
-
-
 SoftwareSerial Serial_1(D6, D5); //Rx and Tx
 
 void setup()  
