@@ -15,6 +15,33 @@
     <div id="listGamepads"></div>
   </body>
   <script>
+    var websocket;
+
+    window.addEventListener("load", function () {
+      websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
+
+      websocket.onopen = function (event) {
+        console.log("Opened WebSocket.");
+      };
+
+      websocket.onclose = function (event) {
+        console.log("Closed WebSocket.");
+      };
+
+      websocket.onerror = function (error) {
+        console.log("Error with WebSocket.");
+      };
+
+      websocket.onmessage = function (event) {
+        console.log(`Received message from server: ${event.data}`);
+      };
+    });
+
+    function testWebSocket() {
+      console.log("Sending message to WebSocket.");
+      websocket.send("Hello, world");
+    }
+
     var gamepadControllers;
     var controllerDevice = 0;
     var gamepadIndex = 0;
@@ -25,18 +52,6 @@
       RIGHT: 1,
       LEFT: 3,
     };
-
-    function move(commands) {
-      let xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-        }
-
-        xhttp.open("POST", "/move", true);
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.send(JSON.stringify(commands));
-      };
-    }
 
     function listGamepads() {
       gamepadControllers = [];
@@ -78,7 +93,6 @@
 
         let commands = [dirNorthSouth, dirEastWest];
         console.log(commands);
-        move(commands);
       }
     }
 
@@ -95,6 +109,6 @@
     window.addEventListener("DOMContentLoaded", listGamepads);
     window.addEventListener("gamepadconnected", listGamepads);
     window.addEventListener("gamepaddisconnected", listGamepads);
-    setInterval(gamepadController, 250);
+    setInterval(testWebSocket, 250);
   </script>
 </html>
