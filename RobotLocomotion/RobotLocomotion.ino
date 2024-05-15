@@ -4,6 +4,31 @@
 
 #include "LittleFS.h"
 
+struct DCMotor {
+  int input0;
+  int input1;
+  int enable;
+}
+
+enum MotorRotation {
+  CW,
+  AntiCW,
+  Stop,
+};
+
+enum MotorDirection {
+  NORTH,
+  SOUTH,
+  EAST,
+  WEST,
+  NORTHEAST,
+  NORTHWEST,
+  SOUTHEAST,
+  SOUTHWEST,
+};
+
+int speed = 127;
+
 const char *ssid = "Locomotor Model A";
 const char *password = "password1234";
 
@@ -35,7 +60,8 @@ void handleWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, 
 
     case WS_EVT_DATA:
       Serial.printf("Received WebSocket message from client #%u: ", client->id());
-      Serial.println((char *)data);
+      char dirNorthSouth = (char)data[0];
+      char dirEastWest = (char)data[2];
       break;
 
     case WS_EVT_PONG:
@@ -55,6 +81,12 @@ void handleNotFound(AsyncWebServerRequest *request) {
 }
 
 void setup() {
+  DCMotor motorLeft;
+  DCMotor motorRight;
+
+  setDCMotor(motorLeft, 18, 19, 21);
+  setDCMotor(motorRight, 27, 26, 25);
+
   Serial.begin(115200);
 
   if (!LittleFS.begin()) {
@@ -79,6 +111,4 @@ void setup() {
   server.begin();
 }
 
-void loop() {
-  socket.cleanupClients();
-}
+void loop() {}

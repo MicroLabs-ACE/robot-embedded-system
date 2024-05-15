@@ -37,11 +37,6 @@
       };
     });
 
-    function testWebSocket() {
-      console.log("Sending message to WebSocket.");
-      websocket.send("Hello, world");
-    }
-
     var gamepadControllers;
     var controllerDevice = 0;
     var gamepadIndex = 0;
@@ -73,26 +68,26 @@
 
     function gamepadController() {
       let gamepad = navigator.getGamepads()[gamepadIndex];
-      let dirNorthSouth = 0;
-      let dirEastWest = 0;
+      let dirNorthSouth = "O";
+      let dirEastWest = "O";
 
       if (gamepad) {
         let buttons = gamepad.buttons;
         if (buttons[Direction.FORWARD].pressed) {
-          dirNorthSouth = 1;
+          dirNorthSouth = "N";
         }
         if (buttons[Direction.BACKWARD].pressed) {
-          dirNorthSouth = -1;
+          dirNorthSouth = "S";
         }
         if (buttons[Direction.RIGHT].pressed) {
-          dirEastWest = 1;
+          dirEastWest = "W";
         }
         if (buttons[Direction.LEFT].pressed) {
-          dirEastWest = -1;
+          dirEastWest = "E";
         }
 
         let commands = [dirNorthSouth, dirEastWest];
-        console.log(commands);
+        websocket.send(commands);
       }
     }
 
@@ -109,6 +104,6 @@
     window.addEventListener("DOMContentLoaded", listGamepads);
     window.addEventListener("gamepadconnected", listGamepads);
     window.addEventListener("gamepaddisconnected", listGamepads);
-    setInterval(testWebSocket, 250);
+    setInterval(gamepadController, 250);
   </script>
 </html>
