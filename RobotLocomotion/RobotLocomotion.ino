@@ -96,15 +96,26 @@ void controlMotor(char direction[3]) {
   }
 }
 
-const char *ssid = "Locomotor Model A";
-const char *password = "password1234";
+const char *ssid = "Caroline";
+const char *password = "password";
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 String indexHTML;
+String images[] = {
+  "/images/up_outlined.png",
+  "/images/down_outlined.png",
+  "/images/left_outlined.png",
+  "/images/right_outlined.png",
+  "/images/up_filled.png",
+  "/images/down_filled.png",
+  "/images/left_filled.png",
+  "/images/right_filled.png",
+};
+const int numberOfImages = 8;
 
-void getIndexHTMLFile() {
+void readIndexHTMLFile() {
   File indexHTMLFile = LittleFS.open("/index.html", "r");
   if (!indexHTMLFile) {
     Serial.println("Failed to open file for reading.");
@@ -147,6 +158,17 @@ void handleRoot(AsyncWebServerRequest *request) {
   request->send(200, "text/html", indexHTML);
 }
 
+void handleImage(AsyncWebServerRequest *request, const String &filename) {
+  File file = LittleFS.open(filename, "r");
+  if (!file) {
+    request->send(404, "text/plain", "Image not found");
+    return;
+  }
+  String contentType = "image/png";
+  request->send(file, contentType);
+  file.close();
+}
+
 void handleNotFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Not found.");
 }
@@ -163,8 +185,6 @@ void setup() {
       ;
   }
 
-  getIndexHTMLFile();
-
   WiFi.softAP(ssid, password);
   Serial.println();
   Serial.print("IP address: ");
@@ -173,9 +193,15 @@ void setup() {
   ws.onEvent(handleWebSocketEvent);
   server.addHandler(&ws);
 
+  readIndexHTMLFile();
   server.on("/", HTTP_GET, handleRoot);
+  for (int i = 0; i < numberOfImages; ++i) {
+    String path = images[i];
+    server.on(path.c_str(), HTTP_GET, [path](AsyncWebServerRequest *request) {
+      handleImage(request, path);
+    });
+  }
   server.onNotFound(handleNotFound);
-
   server.begin();
 }
 
