@@ -13,10 +13,10 @@
   <body>
     <h1>GAMEPADS</h1>
     <div id="listGamepads"></div>
-    <img src="images/up_outlined.png" alt="Up Arrow" />
-    <img src="images/down_outlined.png" alt="Down Arrow" />
-    <img src="images/left_outlined.png" alt="Left Arrow" />
-    <img src="images/right_outlined.png" alt="Right Arrow" />
+    <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
+    <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
+    <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
+    <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
   </body>
   <script>
     var websocket;
@@ -75,20 +75,32 @@
       let dirNorthSouth = "O";
       let dirEastWest = "O";
 
+      const upArrow = document.getElementById("up-arrow");
+      const downArrow = document.getElementById("down-arrow");
+      const leftArrow = document.getElementById("left-arrow");
+      const rightArrow = document.getElementById("right-arrow");
+
       if (gamepad) {
         let buttons = gamepad.buttons;
         if (buttons[Direction.FORWARD].pressed) {
           dirNorthSouth = "N";
-        }
+          upArrow.src = "images/up_filled.png";
+        } else upArrow.src = "images/up_outlined.png";
+
         if (buttons[Direction.BACKWARD].pressed) {
           dirNorthSouth = "S";
-        }
-        if (buttons[Direction.RIGHT].pressed) {
-          dirEastWest = "W";
-        }
+          downArrow.src = "images/down_filled.png";
+        } else downArrow.src = "images/down_outlined.png";
+
         if (buttons[Direction.LEFT].pressed) {
           dirEastWest = "E";
-        }
+          leftArrow.src = "images/left_filled.png";
+        } else leftArrow.src = "images/left_outlined.png";
+
+        if (buttons[Direction.RIGHT].pressed) {
+          dirEastWest = "W";
+          rightArrow.src = "images/right_filled.png";
+        } else rightArrow.src = "images/right_outlined.png";
 
         let commands = [dirNorthSouth, dirEastWest];
         websocket.send(commands);
