@@ -19,23 +19,56 @@
     <img id="right-arrow" src="/images/right_outlined.png" alt="Right Arrow" />
   </body>
   <script>
-    var websocket;
+    var length = 4;
+    var width = 4;
+    var graph = new Object();
+    var x, y;
 
+    for (let i = 0; i < length; i++)
+      for (let j = 0; j < width; j++) {
+        const nodes = {
+          north: [i, j - 1],
+          northEast: [i + 1, j - 1],
+          east: [i + 1, j],
+          southEast: [i + 1, j + 1],
+          south: [i, j + 1],
+          southWest: [i - 1, j + 1],
+          west: [i - 1, j],
+          northWest: [i - 1, j - 1],
+        };
+
+        for (const [node, coordinates] of Object.entries(nodes)) {
+          [x, y] = coordinates;
+          var horizontalCondition = x >= 0 && x < length;
+          var verticalCondition = y >= 0 && y < width;
+          if (horizontalCondition && verticalCondition) {
+            if (!graph.hasOwnProperty(`${i}${j}`)) {
+              graph[`${i}${j}`] = new Object();
+            }
+
+            if (node === "north" || node === "south") {
+              graph[`${i}${j}`][`${x}${y}`] = 3;
+            } else if (node === "west" || node === "east") {
+              graph[`${i}${j}`][`${x}${y}`] = 4;
+            } else graph[`${i}${j}`][`${x}${y}`] = 5;
+          }
+        }
+      }
+
+    console.log(graph);
+
+    var websocket;
     window.addEventListener("load", function () {
       websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
-
       websocket.onopen = function (event) {
         console.log("Opened WebSocket.");
       };
-
       websocket.onclose = function (event) {
         console.log("Closed WebSocket.");
       };
-
       websocket.onerror = function (error) {
         console.log("Error with WebSocket.");
       };
-
       websocket.onmessage = function (event) {
         console.log(`Received message from server: ${event.data}`);
       };
