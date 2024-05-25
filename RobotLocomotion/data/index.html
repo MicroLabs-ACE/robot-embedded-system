@@ -13,10 +13,14 @@
   <body>
     <h1>GAMEPADS</h1>
     <div id="listGamepads"></div>
-    <img id="up-arrow" src="/images/up_outlined.png" alt="Up Arrow" />
-    <img id="down-arrow" src="/images/down_outlined.png" alt="Down Arrow" />
-    <img id="left-arrow" src="/images/left_outlined.png" alt="Left Arrow" />
-    <img id="right-arrow" src="/images/right_outlined.png" alt="Right Arrow" />
+    <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
+    <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
+    <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
+    <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
+    <form id="speedLevel">
+      <input type="number" id="speedLevelInput" name="speedLevel" />
+      <button type="button" onclick="handleSpeed()">Submit</button>
+    </form>
   </body>
   <script>
     class VectorGraph {
@@ -50,8 +54,8 @@
                 if (node === "north" || node === "south")
                   this.addEdge(`${i}${j}`, `${x}${y}`, 3);
                 else if (node === "west" || node === "east")
-                  this.addEdge(`${i}${j}`, `${x}${y}`, 4);
-                else this.addEdge(`${i}${j}`, `${x}${y}`, 5);
+                  this.addEdge(`${i}-${j}`, `${x}-${y}`, 4);
+                else this.addEdge(`${i}-${j}`, `${x}-${y}`, 5);
               }
             }
           }
@@ -73,6 +77,24 @@
           this.graph[dst] = {};
         }
       }
+
+      // removeEdge(src) {
+      //   if (this.doesNodeExist(src)) {
+      //     const [i, j] = src.split("-");
+      //     const nodes = {
+      //       north: [i, j - 1],
+      //       northEast: [i + 1, j - 1],
+      //       east: [i + 1, j],
+      //       southEast: [i + 1, j + 1],
+      //       south: [i, j + 1],
+      //       southWest: [i - 1, j + 1],
+      //       west: [i - 1, j],
+      //       northWest: [i - 1, j - 1],
+      //     };
+
+      //     this.graph[src] = {}
+      //   }
+      // }
 
       dijkstra(start) {
         const findLowestCostNode = (costs, processed) => {
@@ -167,8 +189,8 @@
     }
 
     const v = new VectorGraph(3, 3);
-    v.dijkstra("00");
-    v.dfs("00");
+    v.dijkstra("0-0");
+    v.dfs("0-0");
 
     var websocket;
     window.addEventListener("load", function () {
@@ -190,6 +212,7 @@
     var gamepadControllers;
     var controllerDevice = 0;
     var gamepadIndex = 0;
+    var speed = 3;
 
     const Direction = {
       FORWARD: 4,
@@ -197,6 +220,12 @@
       RIGHT: 1,
       LEFT: 3,
     };
+
+    function handleSpeed() {
+      const speedLevelInput = document.getElementById("speedLevelInput").value;
+      speed = speedLevelInput;
+      console.log(speed);
+    }
 
     function listGamepads() {
       gamepadControllers = [];
@@ -248,7 +277,7 @@
           rightArrow.src = "images/right_filled.png";
         } else rightArrow.src = "images/right_outlined.png";
 
-        let commands = [dirNorthSouth, dirEastWest];
+        let commands = [dirNorthSouth, dirEastWest, speed];
         websocket.send(commands);
       }
     }
@@ -266,6 +295,7 @@
     window.addEventListener("DOMContentLoaded", listGamepads);
     window.addEventListener("gamepadconnected", listGamepads);
     window.addEventListener("gamepaddisconnected", listGamepads);
+    window.addEventListener("c");
     setInterval(gamepadController, 250);
   </script>
 </html>
