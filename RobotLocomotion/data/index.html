@@ -23,7 +23,7 @@
       constructor(length, width) {
         this.length = length;
         this.width = width;
-        this.graph = new Object();
+        this.graph = {};
         this.generate_graph();
       }
 
@@ -70,7 +70,7 @@
         }
 
         if (!this.doesNodeExist(dst)) {
-          this.graph[dst] = new Object();
+          this.graph[dst] = {};
         }
       }
 
@@ -126,10 +126,30 @@
         console.log(parents);
         console.log(costs);
       }
+
+      bfs(start) {
+        const queue = [start];
+        const visited = new Set();
+        visited.add(start);
+
+        while (queue.length > 0) {
+          const node = queue.shift();
+          console.log(node);
+
+          const neighbors = this.graph[node];
+          for (const neighbor in neighbors) {
+            if (!visited.has(neighbor)) {
+              queue.push(neighbor);
+              visited.add(neighbor);
+            }
+          }
+        }
+      }
     }
 
     const v = new VectorGraph(3, 3);
     v.dijkstra("00");
+    v.bfs("00");
 
     var websocket;
     window.addEventListener("load", function () {
