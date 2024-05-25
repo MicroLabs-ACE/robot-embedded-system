@@ -127,16 +127,35 @@
         console.log(costs);
       }
 
+      dfs(start) {
+        const stack = [start];
+        const visited = new Set();
+        visited.add(start);
+
+        while (stack.length > 0) {
+          const currentNode = stack.pop();
+          console.log(currentNode);
+
+          const neighbors = this.graph[currentNode];
+          for (const neighbor in neighbors) {
+            if (!visited.has(neighbor)) {
+              stack.push(neighbor);
+              visited.add(neighbor);
+            }
+          }
+        }
+      }
+
       bfs(start) {
         const queue = [start];
         const visited = new Set();
         visited.add(start);
 
         while (queue.length > 0) {
-          const node = queue.shift();
-          console.log(node);
+          const currentNode = queue.shift();
+          console.log(currentNode);
 
-          const neighbors = this.graph[node];
+          const neighbors = this.graph[currentNode];
           for (const neighbor in neighbors) {
             if (!visited.has(neighbor)) {
               queue.push(neighbor);
@@ -149,7 +168,7 @@
 
     const v = new VectorGraph(3, 3);
     v.dijkstra("00");
-    v.bfs("00");
+    v.dfs("00");
 
     var websocket;
     window.addEventListener("load", function () {
