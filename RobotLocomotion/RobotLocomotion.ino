@@ -15,8 +15,9 @@ enum MotorRotation {
   Stop,
 };
 
-const int highSpeed = 127;
-const int lowSpeed = 63;
+int highSpeed = 153;
+int lowSpeed = 77;
+int speedLevel = 3;
 
 DCMotor motorLeft;
 DCMotor motorRight;
@@ -126,6 +127,38 @@ void readIndexHTMLFile() {
   indexHTMLFile.close();
 }
 
+void setSpeed(int speedLevel) {
+  switch (speedLevel) {
+    case 1:
+      highSpeed = 51;
+      lowSpeed = 26;
+      break;
+
+    case 2:
+      highSpeed = 102;
+      lowSpeed = 51;
+      break;
+
+    case 3:
+      highSpeed = 153;
+      lowSpeed = 77;
+      break;
+
+    case 4:
+      highSpeed = 204;
+      lowSpeed = 102;
+      break;
+
+    case 5:
+      highSpeed = 255;
+      lowSpeed = 128;
+      break;
+
+    default:
+      break;
+  }
+}
+
 void handleWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
@@ -142,6 +175,9 @@ void handleWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, 
       direction[0] = (char)data[0];
       direction[1] = (char)data[2];
       direction[2] = '\0';
+      speedLevel = (char)data[4] - '0';
+      Serial.println(speedLevel);
+      setSpeed(speedLevel);
       controlMotor(direction);
       break;
 
