@@ -23,6 +23,8 @@
     <input type="number" id="speedLevelInput" name="speedLevel" />
     <button type="button" onclick="handleSpeed()">Submit</button>
   </form>
+  <input type="checkbox" name="controlType" id="controlType">
+  <label for="controlType">Automated</label>
 </body>
 <script>
   class VectorGraph {
@@ -80,9 +82,7 @@
       }
     }
 
-
-
-    dijkstra(start) {
+    dijkstra(start, end) {
       const findLowestCostNode = (costs, processed) => {
         let lowestCost = Infinity;
         let lowestCostNode = null;
@@ -131,8 +131,15 @@
         currentNode = findLowestCostNode(costs, processed);
       }
 
-      console.log(parents);
-      console.log(costs);
+      let path = [end];
+      let point = parents[end];
+      while (point !== start) {
+        path.unshift(point);
+        point = parents[point];
+      }
+
+      path.unshift(start);
+      console.log(path);
     }
 
     dfs(start) {
@@ -174,10 +181,6 @@
     }
   }
 
-  const v = new VectorGraph(3, 3);
-  v.dijkstra("0-0");
-  v.dfs("0-0");
-
   var websocket;
   window.addEventListener("load", function () {
     websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
@@ -199,6 +202,7 @@
   var controllerDevice = 0;
   var gamepadIndex = 0;
   var speed = 3;
+  var isAutomated = false;
 
   const Direction = {
     FORWARD: 4,
@@ -211,6 +215,11 @@
     const speedLevelInput = document.getElementById("speedLevelInput").value;
     speed = speedLevelInput;
     console.log(speed);
+  }
+
+  function handleIsAutomated(event) {
+    isAutomated = event.target.checked;
+    console.log(`Automated mode is ${isAutomated ? 'enabled' : 'disabled'}`);
   }
 
   function listGamepads() {
@@ -231,41 +240,45 @@
     container.appendChild(ul);
   }
 
-  function gamepadController() {
-    let gamepad = navigator.getGamepads()[gamepadIndex];
-    let dirNorthSouth = "O";
-    let dirEastWest = "O";
+  function controller() {
+    if (isAutomated) {
+      const v = new VectorGraph(5, 5);
+      v.dijkstra("0-0", "4-4");
+    } else {
+      let gamepad = navigator.getGamepads()[gamepadIndex];
+      let dirNorthSouth = "O";
+      let dirEastWest = "O";
 
-    const upArrow = document.getElementById("up-arrow");
-    const downArrow = document.getElementById("down-arrow");
-    const leftArrow = document.getElementById("left-arrow");
-    const rightArrow = document.getElementById("right-arrow");
+      const upArrow = document.getElementById("up-arrow");
+      const downArrow = document.getElementById("down-arrow");
+      const leftArrow = document.getElementById("left-arrow");
+      const rightArrow = document.getElementById("right-arrow");
 
-    if (gamepad) {
-      let buttons = gamepad.buttons;
-      if (buttons[Direction.FORWARD].pressed) {
-        dirNorthSouth = "N";
-        upArrow.src = "images/up_filled.png";
-      } else upArrow.src = "images/up_outlined.png";
+      if (gamepad) {
+        let buttons = gamepad.buttons;
+        if (buttons[Direction.FORWARD].pressed) {
+          dirNorthSouth = "N";
+          upArrow.src = "images/up_filled.png";
+        } else upArrow.src = "images/up_outlined.png";
 
-      if (buttons[Direction.BACKWARD].pressed) {
-        dirNorthSouth = "S";
-        downArrow.src = "images/down_filled.png";
-      } else downArrow.src = "images/down_outlined.png";
+        if (buttons[Direction.BACKWARD].pressed) {
+          dirNorthSouth = "S";
+          downArrow.src = "images/down_filled.png";
+        } else downArrow.src = "images/down_outlined.png";
 
-      if (buttons[Direction.LEFT].pressed) {
-        dirEastWest = "E";
-        leftArrow.src = "images/left_filled.png";
-      } else leftArrow.src = "images/left_outlined.png";
+        if (buttons[Direction.LEFT].pressed) {
+          dirEastWest = "E";
+          leftArrow.src = "images/left_filled.png";
+        } else leftArrow.src = "images/left_outlined.png";
 
-      if (buttons[Direction.RIGHT].pressed) {
-        dirEastWest = "W";
-        rightArrow.src = "images/right_filled.png";
-      } else rightArrow.src = "images/right_outlined.png";
+        if (buttons[Direction.RIGHT].pressed) {
+          dirEastWest = "W";
+          rightArrow.src = "images/right_filled.png";
+        } else rightArrow.src = "images/right_outlined.png";
 
-      let commands = [dirNorthSouth, dirEastWest, speed];
-      console.log(`Commands: ${commands}`);
-      websocket.send(commands);
+        let commands = [dirNorthSouth, dirEastWest, speed];
+        websocket.send(commands);
+      }
     }
   }
 
@@ -279,10 +292,15 @@
     }
   }
 
-  window.addEventListener("DOMContentLoaded", listGamepads);
+  window.addEventListener("DOMContentLoaded", () => {
+    listGamepads();
+    const controlTypeCheckbox = document.getElementById("controlType");
+    controlTypeCheckbox.addEventListener('change', handleIsAutomated);
+  });
+
   window.addEventListener("gamepadconnected", listGamepads);
   window.addEventListener("gamepaddisconnected", listGamepads);
-  setInterval(gamepadController, 250);
+  setInterval(controller, 250);
 </script>
 
 </html>
