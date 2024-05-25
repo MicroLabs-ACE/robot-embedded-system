@@ -20,8 +20,42 @@
   </body>
   <script>
     class VectorGraph {
-      constructor() {
-        this.graph = {};
+      constructor(length, width) {
+        this.length = length;
+        this.width = width;
+        this.graph = new Object();
+        this.generate_graph();
+      }
+
+      generate_graph() {
+        for (let i = 0; i < this.length; i++)
+          for (let j = 0; j < this.width; j++) {
+            const nodes = {
+              north: [i, j - 1],
+              northEast: [i + 1, j - 1],
+              east: [i + 1, j],
+              southEast: [i + 1, j + 1],
+              south: [i, j + 1],
+              southWest: [i - 1, j + 1],
+              west: [i - 1, j],
+              northWest: [i - 1, j - 1],
+            };
+
+            for (const [node, coordinates] of Object.entries(nodes)) {
+              const [x, y] = coordinates;
+              var horizontalCondition = x >= 0 && x < this.length;
+              var verticalCondition = y >= 0 && y < this.width;
+
+              if (horizontalCondition && verticalCondition) {
+                if (node === "north" || node === "south")
+                  this.addEdge(`${i}${j}`, `${x}${y}`, 3);
+                else if (node === "west" || node === "east")
+                  this.addEdge(`${i}${j}`, `${x}${y}`, 4);
+                else this.addEdge(`${i}${j}`, `${x}${y}`, 5);
+              }
+            }
+          }
+        console.log(this.graph);
       }
 
       doesNodeExist(node) {
@@ -36,7 +70,7 @@
         }
 
         if (!this.doesNodeExist(dst)) {
-          this.graph[dst] = {};
+          this.graph[dst] = new Object();
         }
       }
 
@@ -94,22 +128,7 @@
       }
     }
 
-    // Initialize the graph and add edges
-    const v = new VectorGraph();
-    v.addEdge("00", "01", 3);
-    v.addEdge("00", "10", 4);
-    v.addEdge("01", "02", 3);
-    v.addEdge("01", "11", 4);
-    v.addEdge("02", "12", 4);
-    v.addEdge("10", "11", 3);
-    v.addEdge("10", "20", 4);
-    v.addEdge("11", "12", 3);
-    v.addEdge("11", "21", 4);
-    v.addEdge("12", "22", 4);
-    v.addEdge("20", "21", 3);
-    v.addEdge("21", "22", 3);
-
-    // Run Dijkstra's algorithm
+    const v = new VectorGraph(3, 3);
     v.dijkstra("00");
 
     var websocket;
