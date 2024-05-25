@@ -19,43 +19,98 @@
     <img id="right-arrow" src="/images/right_outlined.png" alt="Right Arrow" />
   </body>
   <script>
-    var length = 4;
-    var width = 4;
-    var graph = new Object();
-    var x, y;
+    class VectorGraph {
+      constructor() {
+        this.graph = {};
+      }
 
-    for (let i = 0; i < length; i++)
-      for (let j = 0; j < width; j++) {
-        const nodes = {
-          north: [i, j - 1],
-          northEast: [i + 1, j - 1],
-          east: [i + 1, j],
-          southEast: [i + 1, j + 1],
-          south: [i, j + 1],
-          southWest: [i - 1, j + 1],
-          west: [i - 1, j],
-          northWest: [i - 1, j - 1],
-        };
+      doesNodeExist(node) {
+        return this.graph.hasOwnProperty(node);
+      }
 
-        for (const [node, coordinates] of Object.entries(nodes)) {
-          [x, y] = coordinates;
-          var horizontalCondition = x >= 0 && x < length;
-          var verticalCondition = y >= 0 && y < width;
-          if (horizontalCondition && verticalCondition) {
-            if (!graph.hasOwnProperty(`${i}${j}`)) {
-              graph[`${i}${j}`] = new Object();
-            }
+      addEdge(src, dst, weight) {
+        if (!this.doesNodeExist(src)) {
+          this.graph[src] = { [dst]: weight };
+        } else {
+          this.graph[src][dst] = weight;
+        }
 
-            if (node === "north" || node === "south") {
-              graph[`${i}${j}`][`${x}${y}`] = 3;
-            } else if (node === "west" || node === "east") {
-              graph[`${i}${j}`][`${x}${y}`] = 4;
-            } else graph[`${i}${j}`][`${x}${y}`] = 5;
-          }
+        if (!this.doesNodeExist(dst)) {
+          this.graph[dst] = {};
         }
       }
 
-    console.log(graph);
+      dijkstra(start) {
+        const findLowestCostNode = (costs, processed) => {
+          let lowestCost = Infinity;
+          let lowestCostNode = null;
+          for (const node in costs) {
+            const cost = costs[node];
+            if (cost < lowestCost && !processed.includes(node)) {
+              lowestCost = cost;
+              lowestCostNode = node;
+            }
+          }
+          return lowestCostNode;
+        };
+
+        const nodesExceptStart = Object.keys(this.graph).filter(
+          (node) => node !== start
+        );
+        const costs = {};
+        const parents = {};
+        const processed = [];
+
+        nodesExceptStart.forEach((node) => {
+          costs[node] = Infinity;
+          parents[node] = null;
+        });
+
+        const startNeighbors = Object.keys(this.graph[start]);
+        startNeighbors.forEach((node) => {
+          parents[node] = start;
+          costs[node] = this.graph[start][node];
+        });
+
+        let currentNode = findLowestCostNode(costs, processed);
+
+        while (currentNode !== null) {
+          const cost = costs[currentNode];
+          const neighbors = this.graph[currentNode];
+
+          for (const n in neighbors) {
+            const newCost = cost + neighbors[n];
+            if (costs[n] > newCost) {
+              costs[n] = newCost;
+              parents[n] = currentNode;
+            }
+          }
+          processed.push(currentNode);
+          currentNode = findLowestCostNode(costs, processed);
+        }
+
+        console.log(parents);
+        console.log(costs);
+      }
+    }
+
+    // Initialize the graph and add edges
+    const v = new VectorGraph();
+    v.addEdge("00", "01", 3);
+    v.addEdge("00", "10", 4);
+    v.addEdge("01", "02", 3);
+    v.addEdge("01", "11", 4);
+    v.addEdge("02", "12", 4);
+    v.addEdge("10", "11", 3);
+    v.addEdge("10", "20", 4);
+    v.addEdge("11", "12", 3);
+    v.addEdge("11", "21", 4);
+    v.addEdge("12", "22", 4);
+    v.addEdge("20", "21", 3);
+    v.addEdge("21", "22", 3);
+
+    // Run Dijkstra's algorithm
+    v.dijkstra("00");
 
     var websocket;
     window.addEventListener("load", function () {
