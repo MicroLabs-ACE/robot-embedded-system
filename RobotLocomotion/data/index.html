@@ -1,306 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Robot Controller</title>
-</head>
-<style>
-  body {
-    font-family: monospace;
-  }
-</style>
-
-<body>
-  <h1>GAMEPADS</h1>
-  <div id="listGamepads"></div>
-  <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
-  <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
-  <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
-  <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
-  <form id="speedLevel">
-    <input type="number" id="speedLevelInput" name="speedLevel" />
-    <button type="button" onclick="handleSpeed()">Submit</button>
-  </form>
-  <input type="checkbox" name="controlType" id="controlType">
-  <label for="controlType">Automated</label>
-</body>
-<script>
-  class VectorGraph {
-    constructor(length, width) {
-      this.length = length;
-      this.width = width;
-      this.graph = {};
-      this.generate_graph();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robot Controller</title>
+  </head>
+  <style>
+    body {
+      font-family: monospace;
     }
+  </style>
 
-    generate_graph() {
-      for (let i = 0; i < this.length; i++)
-        for (let j = 0; j < this.width; j++) {
-          const nodes = {
-            north: [i, j - 1],
-            northEast: [i + 1, j - 1],
-            east: [i + 1, j],
-            southEast: [i + 1, j + 1],
-            south: [i, j + 1],
-            southWest: [i - 1, j + 1],
-            west: [i - 1, j],
-            northWest: [i - 1, j - 1],
-          };
+  <body>
+    <h1>GAMEPADS</h1>
+    <div id="listGamepads"></div>
+    <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
+    <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
+    <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
+    <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
+    <form id="speedLevel">
+      <input type="number" id="speedLevelInput" name="speedLevel" />
+      <button type="button" onclick="handleSpeed()">Submit</button>
+    </form>
+    <input type="checkbox" name="controlType" id="controlType" />
+    <label for="controlType">Automated</label>
+  </body>
+  <script>
+    class MapGraph {
+      constructor(length, width) {
+        this.length = length;
+        this.width = width;
+        this.graph = {};
+        this.generate_graph();
+      }
 
-          for (const [node, coordinates] of Object.entries(nodes)) {
-            const [x, y] = coordinates;
-            var horizontalCondition = x >= 0 && x < this.length;
-            var verticalCondition = y >= 0 && y < this.width;
+      generate_graph() {
+        for (let i = 0; i < this.length; i++)
+          for (let j = 0; j < this.width; j++) {
+            const nodes = {
+              north: [i, j - 1],
+              northEast: [i + 1, j - 1],
+              east: [i + 1, j],
+              southEast: [i + 1, j + 1],
+              south: [i, j + 1],
+              southWest: [i - 1, j + 1],
+              west: [i - 1, j],
+              northWest: [i - 1, j - 1],
+            };
 
-            if (horizontalCondition && verticalCondition) {
-              if (node === "north" || node === "south")
-                this.addEdge(`${i}${j}`, `${x}${y}`, 3);
-              else if (node === "west" || node === "east")
-                this.addEdge(`${i}-${j}`, `${x}-${y}`, 4);
-              else this.addEdge(`${i}-${j}`, `${x}-${y}`, 5);
+            for (const [node, coordinates] of Object.entries(nodes)) {
+              const [x, y] = coordinates;
+              var horizontalCondition = x >= 0 && x < this.length;
+              var verticalCondition = y >= 0 && y < this.width;
+
+              if (horizontalCondition && verticalCondition) {
+                if (node === "north" || node === "south")
+                  this.addEdge(`${i}${j}`, `${x}${y}`, 3);
+                else if (node === "west" || node === "east")
+                  this.addEdge(`${i}-${j}`, `${x}-${y}`, 4);
+                else this.addEdge(`${i}-${j}`, `${x}-${y}`, 5);
+              }
+            }
+          }
+      }
+
+      doesNodeExist(node) {
+        return this.graph.hasOwnProperty(node);
+      }
+
+      addEdge(src, dst, weight) {
+        if (!this.doesNodeExist(src)) {
+          this.graph[src] = { [dst]: weight };
+        } else {
+          this.graph[src][dst] = weight;
+        }
+
+        if (!this.doesNodeExist(dst)) {
+          this.graph[dst] = {};
+        }
+      }
+
+      getDistance(src, dst) {
+        return this.graph[src][dst];
+      }
+
+      getDirection(src, dst) {
+        const [x0, y0] = src.split("-");
+        const [x1, y1] = dst.split("-");
+
+        const dx = Number(x1) - Number(x0);
+        const dy = Number(y1) - Number(y0);
+
+        let direction;
+        if (dx === 0 && dy === 1) direction = 0;
+        else if (dx === 1 && dy === 1) direction = 45;
+        else if (dx === 1 && dy === 0) direction = 90;
+        else if (dx === 1 && dy === -1) direction = 135;
+        else if (dx === 0 && dy === -1) direction = 180;
+        else if (dx === -1 && dy === -1) direction = 225;
+        else if (dx === -1 && dy === 0) direction = 270;
+        else if (dx === -1 && dy === 1) direction = 315;
+
+        return direction;
+      }
+
+      dijkstra(start, end) {
+        const findLowestCostNode = (costs, processed) => {
+          let lowestCost = Infinity;
+          let lowestCostNode = null;
+          for (const node in costs) {
+            const cost = costs[node];
+            if (cost < lowestCost && !processed.includes(node)) {
+              lowestCost = cost;
+              lowestCostNode = node;
+            }
+          }
+          return lowestCostNode;
+        };
+
+        const nodesExceptStart = Object.keys(this.graph).filter(
+          (node) => node !== start
+        );
+        const costs = {};
+        const parents = {};
+        const processed = [];
+
+        nodesExceptStart.forEach((node) => {
+          costs[node] = Infinity;
+          parents[node] = null;
+        });
+
+        const startNeighbors = Object.keys(this.graph[start]);
+        startNeighbors.forEach((node) => {
+          parents[node] = start;
+          costs[node] = this.graph[start][node];
+        });
+
+        let currentNode = findLowestCostNode(costs, processed);
+        while (currentNode !== null) {
+          const cost = costs[currentNode];
+          const neighbors = this.graph[currentNode];
+
+          for (const n in neighbors) {
+            const newCost = cost + neighbors[n];
+            if (costs[n] > newCost) {
+              costs[n] = newCost;
+              parents[n] = currentNode;
+            }
+          }
+          processed.push(currentNode);
+          currentNode = findLowestCostNode(costs, processed);
+        }
+
+        let path = [end];
+        let point = parents[end];
+        while (point !== start) {
+          path.unshift(point);
+          point = parents[point];
+        }
+        path.unshift(start);
+        return path;
+      }
+
+      dfs(start) {
+        const stack = [start];
+        const visited = new Set();
+        visited.add(start);
+
+        while (stack.length > 0) {
+          const currentNode = stack.pop();
+          const neighbors = this.graph[currentNode];
+          for (const neighbor in neighbors) {
+            if (!visited.has(neighbor)) {
+              stack.push(neighbor);
+              visited.add(neighbor);
             }
           }
         }
-      console.log(this.graph);
-    }
-
-    doesNodeExist(node) {
-      return this.graph.hasOwnProperty(node);
-    }
-
-    addEdge(src, dst, weight) {
-      if (!this.doesNodeExist(src)) {
-        this.graph[src] = { [dst]: weight };
-      } else {
-        this.graph[src][dst] = weight;
       }
 
-      if (!this.doesNodeExist(dst)) {
-        this.graph[dst] = {};
-      }
-    }
+      bfs(start) {
+        const queue = [start];
+        const visited = new Set();
+        visited.add(start);
 
-    dijkstra(start, end) {
-      const findLowestCostNode = (costs, processed) => {
-        let lowestCost = Infinity;
-        let lowestCostNode = null;
-        for (const node in costs) {
-          const cost = costs[node];
-          if (cost < lowestCost && !processed.includes(node)) {
-            lowestCost = cost;
-            lowestCostNode = node;
-          }
-        }
-        return lowestCostNode;
-      };
-
-      const nodesExceptStart = Object.keys(this.graph).filter(
-        (node) => node !== start
-      );
-      const costs = {};
-      const parents = {};
-      const processed = [];
-
-      nodesExceptStart.forEach((node) => {
-        costs[node] = Infinity;
-        parents[node] = null;
-      });
-
-      const startNeighbors = Object.keys(this.graph[start]);
-      startNeighbors.forEach((node) => {
-        parents[node] = start;
-        costs[node] = this.graph[start][node];
-      });
-
-      let currentNode = findLowestCostNode(costs, processed);
-
-      while (currentNode !== null) {
-        const cost = costs[currentNode];
-        const neighbors = this.graph[currentNode];
-
-        for (const n in neighbors) {
-          const newCost = cost + neighbors[n];
-          if (costs[n] > newCost) {
-            costs[n] = newCost;
-            parents[n] = currentNode;
-          }
-        }
-        processed.push(currentNode);
-        currentNode = findLowestCostNode(costs, processed);
-      }
-
-      let path = [end];
-      let point = parents[end];
-      while (point !== start) {
-        path.unshift(point);
-        point = parents[point];
-      }
-
-      path.unshift(start);
-      console.log(path);
-    }
-
-    dfs(start) {
-      const stack = [start];
-      const visited = new Set();
-      visited.add(start);
-
-      while (stack.length > 0) {
-        const currentNode = stack.pop();
-        console.log(currentNode);
-
-        const neighbors = this.graph[currentNode];
-        for (const neighbor in neighbors) {
-          if (!visited.has(neighbor)) {
-            stack.push(neighbor);
-            visited.add(neighbor);
+        while (queue.length > 0) {
+          const currentNode = queue.shift();
+          const neighbors = this.graph[currentNode];
+          for (const neighbor in neighbors) {
+            if (!visited.has(neighbor)) {
+              queue.push(neighbor);
+              visited.add(neighbor);
+            }
           }
         }
       }
     }
 
-    bfs(start) {
-      const queue = [start];
-      const visited = new Set();
-      visited.add(start);
+    // var websocket;
+    // window.addEventListener("load", function () {
+    //   websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
+    //   websocket.onopen = function (event) {
+    //     console.log("Opened WebSocket.");
+    //   };
+    //   websocket.onclose = function (event) {
+    //     console.log("Closed WebSocket.");
+    //   };
+    //   websocket.onerror = function (error) {
+    //     console.log("Error with WebSocket.");
+    //   };
+    //   websocket.onmessage = function (event) {
+    //     console.log(`Received message from server: ${event.data}`);
+    //   };
+    // });
 
-      while (queue.length > 0) {
-        const currentNode = queue.shift();
-        console.log(currentNode);
+    var gamepadControllers;
+    var controllerDevice = 0;
+    var gamepadIndex = 0;
+    var speed = 3;
+    var isAutomated = false;
+    var robot = {
+      direction: 0,
+      alignment: 0,
+      steps: 0,
+      path: [],
+    };
 
-        const neighbors = this.graph[currentNode];
-        for (const neighbor in neighbors) {
-          if (!visited.has(neighbor)) {
-            queue.push(neighbor);
-            visited.add(neighbor);
-          }
+    const mapGraph = new MapGraph(5, 5);
+    robot.path = mapGraph.dijkstra("0-0", "4-4");
+
+    const Direction = {
+      FORWARD: 4,
+      BACKWARD: 6,
+      RIGHT: 1,
+      LEFT: 3,
+    };
+
+    function handleSpeed() {
+      const speedLevelInput = document.getElementById("speedLevelInput").value;
+      speed = speedLevelInput;
+      console.log(speed);
+    }
+
+    function handleIsAutomated(event) {
+      isAutomated = event.target.checked;
+    }
+
+    function listGamepads() {
+      gamepadControllers = [];
+
+      var container = document.getElementById("listGamepads");
+      container.innerHTML = "";
+      var ul = document.createElement("ul");
+
+      getGamepads();
+      for (const [index, gpName] of gamepadControllers.entries()) {
+        if (gpName) {
+          var li = document.createElement("li");
+          li.textContent = `${index}: ${gpName}`;
+          ul.appendChild(li);
         }
       }
+      container.appendChild(ul);
     }
-  }
 
-  var websocket;
-  window.addEventListener("load", function () {
-    websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
-    websocket.onopen = function (event) {
-      console.log("Opened WebSocket.");
-    };
-    websocket.onclose = function (event) {
-      console.log("Closed WebSocket.");
-    };
-    websocket.onerror = function (error) {
-      console.log("Error with WebSocket.");
-    };
-    websocket.onmessage = function (event) {
-      console.log(`Received message from server: ${event.data}`);
-    };
-  });
-
-  var gamepadControllers;
-  var controllerDevice = 0;
-  var gamepadIndex = 0;
-  var speed = 3;
-  var isAutomated = false;
-
-  const Direction = {
-    FORWARD: 4,
-    BACKWARD: 6,
-    RIGHT: 1,
-    LEFT: 3,
-  };
-
-  function handleSpeed() {
-    const speedLevelInput = document.getElementById("speedLevelInput").value;
-    speed = speedLevelInput;
-    console.log(speed);
-  }
-
-  function handleIsAutomated(event) {
-    isAutomated = event.target.checked;
-    console.log(`Automated mode is ${isAutomated ? 'enabled' : 'disabled'}`);
-  }
-
-  function listGamepads() {
-    gamepadControllers = [];
-
-    var container = document.getElementById("listGamepads");
-    container.innerHTML = "";
-    var ul = document.createElement("ul");
-
-    getGamepads();
-    for (const [index, gpName] of gamepadControllers.entries()) {
-      if (gpName) {
-        var li = document.createElement("li");
-        li.textContent = `${index}: ${gpName}`;
-        ul.appendChild(li);
-      }
-    }
-    container.appendChild(ul);
-  }
-
-  function controller() {
-    if (isAutomated) {
-      const v = new VectorGraph(5, 5);
-      v.dijkstra("0-0", "4-4");
-    } else {
+    function controller() {
       let gamepad = navigator.getGamepads()[gamepadIndex];
       let dirNorthSouth = "O";
       let dirEastWest = "O";
 
-      const upArrow = document.getElementById("up-arrow");
-      const downArrow = document.getElementById("down-arrow");
-      const leftArrow = document.getElementById("left-arrow");
-      const rightArrow = document.getElementById("right-arrow");
+      if (isAutomated) {
+        console.log(robot.path);
+        if (robot.path.length > 1) {
+          if (robot.alignment === 0) {
+            if (robot.steps === 0) {
+              const src = robot.path.shift();
+              const dst = robot.path[0];
+              const targetDirection = mapGraph.getDirection(src, dst);
 
-      if (gamepad) {
-        let buttons = gamepad.buttons;
-        if (buttons[Direction.FORWARD].pressed) {
-          dirNorthSouth = "N";
-          upArrow.src = "images/up_filled.png";
-        } else upArrow.src = "images/up_outlined.png";
+              const stepLeft = 360 - targetDirection + robot.direction;
+              const stepRight = robot.direction - targetDirection;
+              if (stepLeft < stepRight) robot.alignment = -stepLeft;
+              else robot.alignment = stepRight;
 
-        if (buttons[Direction.BACKWARD].pressed) {
-          dirNorthSouth = "S";
-          downArrow.src = "images/down_filled.png";
-        } else downArrow.src = "images/down_outlined.png";
+              robot.direction = targetDirection;
+              robot.steps = mapGraph.getDistance(src, dst);
+            } else {
+              dirNorthSouth = "N";
+              robot.steps--;
+            }
+          } else {
+            if (robot.alignment > 0) {
+              dirEastWest = "E";
+              robot.alignment -= 5;
+            } else {
+              dirEastWest = "W";
+              robot.alignment += 5;
+            }
+          }
+        }
+      } else {
+        const upArrow = document.getElementById("up-arrow");
+        const downArrow = document.getElementById("down-arrow");
+        const leftArrow = document.getElementById("left-arrow");
+        const rightArrow = document.getElementById("right-arrow");
 
-        if (buttons[Direction.LEFT].pressed) {
-          dirEastWest = "E";
-          leftArrow.src = "images/left_filled.png";
-        } else leftArrow.src = "images/left_outlined.png";
+        if (gamepad) {
+          let buttons = gamepad.buttons;
+          if (buttons[Direction.FORWARD].pressed) {
+            dirNorthSouth = "N";
+            upArrow.src = "images/up_filled.png";
+          } else upArrow.src = "images/up_outlined.png";
 
-        if (buttons[Direction.RIGHT].pressed) {
-          dirEastWest = "W";
-          rightArrow.src = "images/right_filled.png";
-        } else rightArrow.src = "images/right_outlined.png";
+          if (buttons[Direction.BACKWARD].pressed) {
+            dirNorthSouth = "S";
+            downArrow.src = "images/down_filled.png";
+          } else downArrow.src = "images/down_outlined.png";
 
-        let commands = [dirNorthSouth, dirEastWest, speed];
-        websocket.send(commands);
+          if (buttons[Direction.LEFT].pressed) {
+            dirEastWest = "E";
+            leftArrow.src = "images/left_filled.png";
+          } else leftArrow.src = "images/left_outlined.png";
+
+          if (buttons[Direction.RIGHT].pressed) {
+            dirEastWest = "W";
+            rightArrow.src = "images/right_filled.png";
+          } else rightArrow.src = "images/right_outlined.png";
+        }
+      }
+
+      let commands = [dirNorthSouth, dirEastWest, speed];
+      console.log(commands);
+      // websocket.send(commands);
+    }
+
+    function getGamepads() {
+      const gamepads = navigator.getGamepads();
+      for (const gp of gamepads) {
+        if (gp) {
+          const gpName = gp.id.split("(")[0];
+          gamepadControllers.push(gpName);
+        }
       }
     }
-  }
 
-  function getGamepads() {
-    const gamepads = navigator.getGamepads();
-    for (const gp of gamepads) {
-      if (gp) {
-        const gpName = gp.id.split("(")[0];
-        gamepadControllers.push(gpName);
-      }
-    }
-  }
+    window.addEventListener("DOMContentLoaded", () => {
+      listGamepads();
+      const controlTypeCheckbox = document.getElementById("controlType");
+      controlTypeCheckbox.addEventListener("change", handleIsAutomated);
+    });
 
-  window.addEventListener("DOMContentLoaded", () => {
-    listGamepads();
-    const controlTypeCheckbox = document.getElementById("controlType");
-    controlTypeCheckbox.addEventListener('change', handleIsAutomated);
-  });
-
-  window.addEventListener("gamepadconnected", listGamepads);
-  window.addEventListener("gamepaddisconnected", listGamepads);
-  setInterval(controller, 250);
-</script>
-
+    window.addEventListener("gamepadconnected", listGamepads);
+    window.addEventListener("gamepaddisconnected", listGamepads);
+    setInterval(controller, 250);
+  </script>
 </html>
