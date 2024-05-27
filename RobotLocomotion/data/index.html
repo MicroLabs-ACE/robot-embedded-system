@@ -12,14 +12,23 @@
     .arrow {
       transform: rotate(45deg);
     }
+    #right-arrow {
+      transform: rotate(90deg);
+    }
+    #down-arrow {
+      transform: rotate(180deg);
+    }
+    #left-arrow {
+      transform: rotate(270deg);
+    }
   </style>
   <body>
     <h1>GAMEPAD:</h1>
     <p id="gamepadConnectState"></p>
     <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
-    <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
-    <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
-    <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
+    <img id="down-arrow" src="images/up_outlined.png" alt="Down Arrow" />
+    <img id="left-arrow" src="images/up_outlined.png" alt="Left Arrow" />
+    <img id="right-arrow" src="images/up_outlined.png" alt="Right Arrow" />
     <form id="speedLevel">
       <select id="speedLevelSelect" name="speedLevel">
         <option value="1">1</option>
@@ -237,13 +246,13 @@
 
     function createGrid() {
       const gridContainer = document.body;
-    for (let i = 0; i < 25; i++) {
-      const point = document.createElement('img');
-      point.src = 'images/point.png';
-      point.alt = 'Point';
-      point.classList.add('point');
-      gridContainer.appendChild(point);
-    }
+      for (let i = 0; i < 25; i++) {
+        const point = document.createElement("img");
+        point.src = "images/point.png";
+        point.alt = "Point";
+        point.classList.add("point");
+        gridContainer.appendChild(point);
+      }
     }
 
     function handleSpeed() {
@@ -315,18 +324,18 @@
 
           if (buttons[Direction.BACKWARD].pressed) {
             dirNorthSouth = "S";
-            downArrow.src = "images/down_filled.png";
-          } else downArrow.src = "images/down_outlined.png";
+            downArrow.src = "images/up_filled.png";
+          } else downArrow.src = "images/up_outlined.png";
 
           if (buttons[Direction.LEFT].pressed) {
             dirEastWest = "E";
-            leftArrow.src = "images/left_filled.png";
-          } else leftArrow.src = "images/left_outlined.png";
+            leftArrow.src = "images/up_filled.png";
+          } else leftArrow.src = "images/up_outlined.png";
 
           if (buttons[Direction.RIGHT].pressed) {
             dirEastWest = "W";
-            rightArrow.src = "images/right_filled.png";
-          } else rightArrow.src = "images/right_outlined.png";
+            rightArrow.src = "images/up_filled.png";
+          } else rightArrow.src = "images/up_outlined.png";
         }
       }
 
