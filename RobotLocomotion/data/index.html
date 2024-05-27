@@ -301,10 +301,10 @@
             }
           } else {
             if (robot.alignment > 0) {
-              dirEastWest = "E";
+              dirEastWest = "W";
               robot.alignment -= 5;
             } else {
-              dirEastWest = "W";
+              dirEastWest = "E";
               robot.alignment += 5;
             }
           }
@@ -328,12 +328,12 @@
           } else downArrow.src = "images/up_outlined.png";
 
           if (buttons[Direction.LEFT].pressed) {
-            dirEastWest = "E";
+            dirEastWest = "W";
             leftArrow.src = "images/up_filled.png";
           } else leftArrow.src = "images/up_outlined.png";
 
           if (buttons[Direction.RIGHT].pressed) {
-            dirEastWest = "W";
+            dirEastWest = "E";
             rightArrow.src = "images/up_filled.png";
           } else rightArrow.src = "images/up_outlined.png";
         }
