@@ -97,8 +97,8 @@ void controlMotor(char direction[3]) {
   }
 }
 
-const char *ssid = "Caroline";
-const char *password = "password";
+const char *ssid = "Microlab";
+const char *password = "Engin33r";
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -221,10 +221,24 @@ void setup() {
       ;
   }
 
-  WiFi.softAP(ssid, password);
-  Serial.println();
-  Serial.print("IP address: ");
-  Serial.println(WiFi.softAPIP());
+  // WiFi.softAP(ssid, password);
+  // Serial.println();
+  // Serial.print("IP address: ");
+  // Serial.println(WiFi.softAPIP());
+
+  WiFi.begin(ssid, password);  // Connect to the network
+  Serial.print("Connecting to ");
+  Serial.print(ssid);
+
+  while (WiFi.status() != WL_CONNECTED) {  // Wait for the Wi-Fi to connect
+    delay(500);
+    Serial.print('.');
+  }
+
+  Serial.println('\n');
+  Serial.println("Connection established!");
+  Serial.print("IP address:\t");
+  Serial.println(WiFi.localIP());
 
   ws.onEvent(handleWebSocketEvent);
   server.addHandler(&ws);
