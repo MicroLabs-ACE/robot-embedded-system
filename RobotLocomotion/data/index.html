@@ -9,21 +9,37 @@
     body {
       font-family: monospace;
     }
+    .arrow {
+      transform: rotate(45deg);
+    }
   </style>
-
   <body>
-    <h1>GAMEPADS</h1>
-    <div id="listGamepads"></div>
+    <h1>GAMEPAD:</h1>
+    <p id="gamepadConnectState"></p>
     <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
     <img id="down-arrow" src="images/down_outlined.png" alt="Down Arrow" />
     <img id="left-arrow" src="images/left_outlined.png" alt="Left Arrow" />
     <img id="right-arrow" src="images/right_outlined.png" alt="Right Arrow" />
     <form id="speedLevel">
-      <input type="number" id="speedLevelInput" name="speedLevel" />
+      <select id="speedLevelSelect" name="speedLevel">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
       <button type="button" onclick="handleSpeed()">Submit</button>
     </form>
     <input type="checkbox" name="controlType" id="controlType" />
     <label for="controlType">Automated</label>
+    <img
+      class="arrow"
+      src="images/arrow.png"
+      width="30"
+      height="30"
+      alt="Arrow"
+    />
+    <img src="images/point.png" width="30" height="30" alt="Point" />
   </body>
   <script>
     class MapGraph {
@@ -31,10 +47,10 @@
         this.length = length;
         this.width = width;
         this.graph = {};
-        this.generate_graph();
+        this.generateGraph();
       }
 
-      generate_graph() {
+      generateGraph() {
         for (let i = 0; i < this.length; i++)
           for (let j = 0; j < this.width; j++) {
             const nodes = {
@@ -197,25 +213,8 @@
       }
     }
 
-    // var websocket;
-    // window.addEventListener("load", function () {
-    //   websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
-    //   websocket.onopen = function (event) {
-    //     console.log("Opened WebSocket.");
-    //   };
-    //   websocket.onclose = function (event) {
-    //     console.log("Closed WebSocket.");
-    //   };
-    //   websocket.onerror = function (error) {
-    //     console.log("Error with WebSocket.");
-    //   };
-    //   websocket.onmessage = function (event) {
-    //     console.log(`Received message from server: ${event.data}`);
-    //   };
-    // });
-
+    var websocket;
     var gamepadControllers;
-    var controllerDevice = 0;
     var gamepadIndex = 0;
     var speed = 3;
     var isAutomated = false;
@@ -236,9 +235,21 @@
       LEFT: 3,
     };
 
+    function createGrid() {
+      const gridContainer = document.body;
+    for (let i = 0; i < 25; i++) {
+      const point = document.createElement('img');
+      point.src = 'images/point.png';
+      point.alt = 'Point';
+      point.classList.add('point');
+      gridContainer.appendChild(point);
+    }
+    }
+
     function handleSpeed() {
-      const speedLevelInput = document.getElementById("speedLevelInput").value;
-      speed = speedLevelInput;
+      const speedLevelSelect =
+        document.getElementById("speedLevelSelect").value;
+      speed = Number(speedLevelSelect);
       console.log(speed);
     }
 
@@ -246,22 +257,12 @@
       isAutomated = event.target.checked;
     }
 
-    function listGamepads() {
+    function isGamepad() {
       gamepadControllers = [];
-
-      var container = document.getElementById("listGamepads");
-      container.innerHTML = "";
-      var ul = document.createElement("ul");
-
       getGamepads();
-      for (const [index, gpName] of gamepadControllers.entries()) {
-        if (gpName) {
-          var li = document.createElement("li");
-          li.textContent = `${index}: ${gpName}`;
-          ul.appendChild(li);
-        }
-      }
-      container.appendChild(ul);
+      var gamepadConnectState = document.getElementById("gamepadConnectState");
+      gamepadConnectState.textContent =
+        gamepadControllers.length > 0 ? "Connected" : "Disconnected";
     }
 
     function controller() {
@@ -344,14 +345,30 @@
       }
     }
 
+    function initializeWebsocket() {
+      websocket = new WebSocket(`ws://${window.location.hostname}/ws`);
+      websocket.onopen = function (event) {
+        console.log("Opened WebSocket.");
+      };
+      websocket.onclose = function (event) {
+        console.log("Closed WebSocket.");
+      };
+      websocket.onerror = function (error) {
+        console.log("Error with WebSocket.");
+      };
+      websocket.onmessage = function (event) {
+        console.log(`Received message from server: ${event.data}`);
+      };
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
-      listGamepads();
+      isGamepad();
       const controlTypeCheckbox = document.getElementById("controlType");
       controlTypeCheckbox.addEventListener("change", handleIsAutomated);
     });
-
-    window.addEventListener("gamepadconnected", listGamepads);
-    window.addEventListener("gamepaddisconnected", listGamepads);
+    // window.addEventListener("load", initializeWebsocket);
+    window.addEventListener("gamepadconnected", isGamepad);
+    window.addEventListener("gamepaddisconnected", isGamepad);
     setInterval(controller, 250);
   </script>
 </html>
