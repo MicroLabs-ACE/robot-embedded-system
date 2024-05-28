@@ -1,6 +1,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
+
 #include "LittleFS.h"
 
 struct DCMotor {
@@ -101,11 +102,9 @@ const char *ssid = "Caroline";
 const char *password = "password";
 
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
+AsyncWebSocket websocket("/ws");
 
 String indexHTML;
-String images[] = { "/images/up_outlined.png", "/images/up_filled.png", "/images/arrow.png", "/images/point.png" };
-const int numberOfImages = 8;
 
 void readIndexHTMLFile() {
   File indexHTMLFile = LittleFS.open("/index.html", "r");
@@ -185,7 +184,7 @@ void handleRoot(AsyncWebServerRequest *request) {
   request->send(200, "text/html", indexHTML);
 }
 
-void handleImage(AsyncWebServerRequest *request, const String &filename) {
+void handleImage(AsyncWebServerRequest *request, const char *filename) {
   File file = LittleFS.open(filename, "r");
   if (!file) {
     request->send(404, "text/plain", "Image not found");
@@ -217,32 +216,25 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.softAPIP());
 
-  // WiFi.begin(ssid, password);  // Connect to the network
-  // Serial.print("Connecting to ");
-  // Serial.print(ssid);
-
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(500);
-  //   Serial.print('.');
-  // }
-
-  // Serial.println('\n');
-  // Serial.println("Connection established!");
-  // Serial.print("IP address:\t");
-  // Serial.println(WiFi.localIP());
-
-  ws.onEvent(handleWebSocketEvent);
-  server.addHandler(&ws);
+  websocket.onEvent(handleWebSocketEvent);
+  server.addHandler(&websocket);
 
   readIndexHTMLFile();
+
   server.on("/", HTTP_GET, handleRoot);
-  for (int i = 0; i < numberOfImages; ++i) {
-    String path = images[i];
-    server.on(path.c_str(), HTTP_GET, [path](AsyncWebServerRequest *request) {
-      handleImage(request, path);
-    });
-  }
   server.onNotFound(handleNotFound);
+  server.on("/images/up_outlined.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleImage(request, "/images/up_outlined.png");
+  });
+  server.on("/images/up_filled.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleImage(request, "/images/up_filled.png");
+  });
+  server.on("/images/arrow.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleImage(request, "/images/arrow.png");
+  });
+  server.on("/images/point.png", HTTP_GET, [](AsyncWebServerRequest *request) {
+    handleImage(request, "/images/point.png");
+  });
   server.begin();
 }
 
