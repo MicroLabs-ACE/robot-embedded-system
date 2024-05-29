@@ -72,12 +72,12 @@ void controlMotor(char direction[3]) {
     setMotorData(motorRight, MotorRotation::AntiCW, highSpeed);
   } else if (strcmp(direction, "OW") == 0) {
     Serial.println("West");
-    setMotorData(motorLeft, MotorRotation::Stop, 0);
-    setMotorData(motorRight, MotorRotation::CW, highSpeed);
+      setMotorData(motorLeft, MotorRotation::AntiCW, highSpeed); // Spin the left motor backward
+      setMotorData(motorRight,  MotorRotation::CW, highSpeed);    // Spin the right motor forward
   } else if (strcmp(direction, "OE") == 0) {
     Serial.println("East");
-    setMotorData(motorLeft, MotorRotation::CW, highSpeed);
-    setMotorData(motorRight, MotorRotation::Stop, 0);
+    setMotorData(motorLeft, MotorRotation::CW, highSpeed); // Spin the left motor forward
+    setMotorData(motorRight, MotorRotation::AntiCW, highSpeed); // Spin the right motor backward
   } else if (strcmp(direction, "NE") == 0) {
     Serial.println("NorthEast");
     setMotorData(motorLeft, MotorRotation::CW, highSpeed);
