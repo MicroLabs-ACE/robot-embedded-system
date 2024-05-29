@@ -63,12 +63,12 @@ void controlMotor(char direction[3]) {
     Serial.println("Origin");
     setMotorData(motorLeft, MotorRotation::Stop, 0);
     setMotorData(motorRight, MotorRotation::Stop, 0);
-  } else if (strcmp(direction, "NO") == 0) {
-    Serial.println("North");
-    setMotorData(motorLeft, MotorRotation::CW, highSpeed);
-    setMotorData(motorRight, MotorRotation::CW, highSpeed);
   } else if (strcmp(direction, "SO") == 0) {
     Serial.println("South");
+    setMotorData(motorLeft, MotorRotation::CW, highSpeed);
+    setMotorData(motorRight, MotorRotation::CW, highSpeed);
+  } else if (strcmp(direction, "NO") == 0) {
+    Serial.println("North");
     setMotorData(motorLeft, MotorRotation::AntiCW, highSpeed);
     setMotorData(motorRight, MotorRotation::AntiCW, highSpeed);
   } else if (strcmp(direction, "OW") == 0) {
@@ -200,7 +200,7 @@ void handleNotFound(AsyncWebServerRequest *request) {
 }
 
 void setup() {
-  setDCMotor(motorLeft, 5, 18, 19);
+  setDCMotor(motorLeft, 21, 22, 23);
   setDCMotor(motorRight, 27, 26, 25);
 
   Serial.begin(115200);
