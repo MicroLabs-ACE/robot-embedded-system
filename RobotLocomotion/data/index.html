@@ -22,33 +22,309 @@
       transform: rotate(270deg);
     }
   </style>
-  <body>
-    <h1>GAMEPAD:</h1>
-    <p id="gamepadConnectState"></p>
-    <img id="up-arrow" src="images/up_outlined.png" alt="Up Arrow" />
-    <img id="down-arrow" src="images/up_outlined.png" alt="Down Arrow" />
-    <img id="left-arrow" src="images/up_outlined.png" alt="Left Arrow" />
-    <img id="right-arrow" src="images/up_outlined.png" alt="Right Arrow" />
-    <form id="speedLevel">
-      <select id="speedLevelSelect" name="speedLevel">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-      </select>
-      <button type="button" onclick="handleSpeed()">Submit</button>
-    </form>
-    <input type="checkbox" name="controlType" id="controlType" />
-    <label for="controlType">Automated</label>
-    <img
-      class="arrow"
-      src="images/arrow.png"
-      width="30"
-      height="30"
-      alt="Arrow"
-    />
-    <img src="images/point.png" width="30" height="30" alt="Point" />
+  <body
+    style="
+      background-color: #323437;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    "
+  >
+    <!-- <h1>GAMEPAD:</h1> -->
+    <div style="margin-block: 9rem">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 350px;
+          /* gap: 1rem; */
+        "
+      >
+        <img src="./images/image.png" style="width: 70px" alt="" />
+        <p
+          id="gamepadConnectState"
+          style="color: #fedd0a; margin-top: 2rem; font-size: 1.3rem"
+        ></p>
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          position: relative;
+          width: 350px;
+          height: 300px;
+          margin-block: 5rem;
+        "
+      >
+        <img
+          id="up-arrow"
+          src="images/up_outlined.png"
+          style="
+            width: 90px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 90px;
+          "
+          alt="Up Arrow"
+        />
+        <img
+          id="down-arrow"
+          src="images/up_outlined.png"
+          style="
+            width: 90px;
+            position: absolute;
+
+            /* transform: translateX(-50%); */
+            transform: rotate(180deg);
+            bottom: 0;
+            height: 90px;
+          "
+          alt="Down Arrow"
+        />
+        <img
+          id="left-arrow"
+          src="images/up_outlined.png"
+          style="
+            width: 90px;
+            position: absolute;
+            top: 30%;
+            left: 0;
+            height: 90px;
+          "
+          alt="Left Arrow"
+        />
+        <img
+          id="right-arrow"
+          src="images/up_outlined.png"
+          style="
+            width: 90px;
+            position: absolute;
+            top: 30%;
+            right: 0;
+            height: 90px;
+          "
+          alt="Right Arrow"
+        />
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2rem;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            width: 350px;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <form id="speedLevel">
+            <select
+              id="speedLevelSelect"
+              style="
+                padding-block: 0.5rem;
+                padding-inline: 1rem;
+                background-color: #fedd0a;
+                cursor: pointer;
+              "
+              name="speedLevel"
+            >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+            <button
+              style="
+                padding-block: 0.5rem;
+                background-color: #fedd0a;
+                color: black;
+                font-weight: bold;
+                padding-inline: 2.5rem;
+                cursor: pointer;
+              "
+              type="button"
+              onclick="handleSpeed()"
+            >
+              Submit
+            </button>
+          </form>
+          <div style="display: flex; align-items: center; gap: 0.3rem">
+            <input type="checkbox" name="controlType" id="controlType" />
+            <label
+              for="controlType"
+              style="color: #fedd0a; font-size: 1rem; font-weight: bold"
+              >Automated</label
+            >
+          </div>
+        </div>
+        <div
+          style="
+            display: flex;
+            width: 350px;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <form id="speedLevel">
+            <span style="color: #fedd0a; font-size: 1.3rem; font-weight: bold"
+              >Map:</span
+            >
+            <input
+            type="number"
+              style="
+                padding-block: 0.5rem;
+                padding-inline: .5rem;
+                width: 50px;
+                background-color: #fedd0a;
+              "
+            >
+            </input>
+            <input
+            type="number"
+              style="
+                padding-block: 0.5rem;
+                padding-inline: .5rem;
+                width: 50px;
+                background-color: #fedd0a;
+              "
+            >
+            </input>
+         
+          </form>
+          <button
+          style="
+            padding-block: 0.5rem;
+            padding-inline: 2.5rem;
+            background-color: #fedd0a;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+          "
+          type="button"
+        >
+          Select
+        </button>
+        </div>
+        <form action="">
+          <div
+            style="
+              display: flex;
+              width: 350px;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <form id="speedLevel">
+              <span style="color: #fedd0a; font-size: 1.3rem; font-weight: bold"
+                >Start:</span
+              >
+              <input
+              type="number"
+                style="
+                  padding-block: 0.5rem;
+                  padding-inline: .5rem;
+                  width: 50px;
+                  background-color: #fedd0a;
+                "
+              >
+              </input>
+              <input
+              type="number"
+                style="
+                  padding-block: 0.5rem;
+                  padding-inline: .5rem;
+                  width: 50px;
+                  background-color: #fedd0a;
+                "
+              >
+              </input>
+           
+            </form>
+            <select
+                id="speedLevelSelect"
+                style="
+                   padding-block: 0.5rem;
+              padding-inline: 2.5rem;
+                  background-color: #fedd0a;
+                  cursor: pointer;
+                "
+                name="speedLevel"
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+          </div>
+          <div
+            style="
+              display: flex;
+              width: 350px;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <form id="speedLevel">
+              <span style="color: #fedd0a; font-size: 1.3rem; font-weight: bold"
+                >End:</span
+              >
+              <input
+              type="number"
+                style="
+                  padding-block: 0.5rem;
+                  padding-inline: .5rem;
+                  width: 50px;
+                  background-color: #fedd0a;
+                "
+              >
+              </input>
+              <input
+              type="number"
+                style="
+                  padding-block: 0.5rem;
+                  padding-inline: .5rem;
+                  width: 50px;
+                  background-color: #fedd0a;
+                "
+              >
+              </input>
+           
+            </form>
+            <button
+            style="
+              padding-block: 0.5rem;
+              background-color: #fedd0a;
+              color: black;
+              font-weight: bold;
+              padding-inline: 2.5rem;
+              cursor: pointer;
+            "
+            type="button"
+          >
+            Submit
+          </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- <img
+        class="arrow"
+        src="images/arrow.png"
+        width="30"
+        height="30"
+        alt="Arrow"
+      /> -->
+      <!-- <img src="images/point.png" width="30" height="30" alt="Point" /> -->
+    </div>
   </body>
   <script>
     class MapGraph {
@@ -271,7 +547,7 @@
       getGamepads();
       var gamepadConnectState = document.getElementById("gamepadConnectState");
       gamepadConnectState.textContent =
-        gamepadControllers.length > 0 ? "Connected" : "Disconnected";
+        gamepadControllers.length > 0 ? ":Connected" : ":Disconnected";
     }
 
     function controller() {
