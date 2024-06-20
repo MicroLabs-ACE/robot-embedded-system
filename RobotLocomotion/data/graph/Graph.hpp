@@ -8,7 +8,7 @@
 class MapGraph {
 public:
     MapGraph(int length, int width);
-    void generateGraph();
+    void setDimensions(int length, int width);
     bool doesNodeExist(const std::string& node) const;
     void addEdge(const std::string& src, const std::string& dst, int weight);
     int getDistance(const std::string& src, const std::string& dst) const;
@@ -17,6 +17,7 @@ public:
 private:
     int length;
     int width;
+    void generateGraph();
     std::unordered_map<std::string, std::unordered_map<std::string, int>> graph;
 };
 
