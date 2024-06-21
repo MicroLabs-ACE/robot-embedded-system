@@ -1,4 +1,4 @@
-#include "Graph.hpp"
+#include "MapGraph.hpp"
 #include <cmath> // for abs
 #include <iostream>
 #include <sstream> // for std::stringstream

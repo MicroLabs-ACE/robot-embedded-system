@@ -1,4 +1,4 @@
-#include "Graph.hpp"
+#include "MapGraph.hpp"
 #include <iostream>
 
 void testDistance(MapGraph& graph, const std::string& src, const std::string& dst) {
