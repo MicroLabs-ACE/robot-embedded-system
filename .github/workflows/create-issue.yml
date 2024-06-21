@@ -2,14 +2,6 @@ name: Create GitHub Issue
 
 on:
   workflow_dispatch:
-    inputs:
-      issue_type:
-        description: "Select type of issue to create"
-        required: true
-        default: "Feature Request"
-        options:
-          - "Feature Request"
-          - "Bug Report"
 
 jobs:
   create-issue:
