@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include "DCMotor.h"
 
 DCMotor::DCMotor(int input0, int input1, int enable) : input0(input0), input1(input1), enable(enable)
