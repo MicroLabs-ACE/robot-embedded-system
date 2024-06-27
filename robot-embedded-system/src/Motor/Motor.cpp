@@ -1,29 +1,30 @@
 #include <Arduino.h>
 
-#include "DCMotor.h"
+#include "Motor.h"
 
-DCMotor::DCMotor(int input0, int input1, int enable) : input0(input0), input1(input1), enable(enable)
+
+Motor::Motor(int input0, int input1, int enable) : input0(input0), input1(input1), enable(enable)
 {
     pinMode(input0, OUTPUT);
     pinMode(input1, OUTPUT);
     pinMode(enable, OUTPUT);
 }
 
-void DCMotor::setMotorRotation(int rotation) 
+void Motor::setMotorRotation(MotorRotation rotation) 
 {
 	switch(rotation) 
 	{
-		case 0: // Stop
+		case MotorRotation::Stop:
 			digitalWrite(input0, LOW);
 			digitalWrite(input1, LOW);
 			break;
 			
-		case 1: // Clockwise
+		case MotorRotation::CW: // Clockwise
 			digitalWrite(input0, HIGH);
 			digitalWrite(input1, LOW);
 			break;
 			
-		case -1: // Anti-Clockwise
+		case MotorRotation::AntiCW:
 			digitalWrite(input0, LOW);
 			digitalWrite(input1, HIGH);
 			break;
@@ -34,7 +35,9 @@ void DCMotor::setMotorRotation(int rotation)
 	}
 }
 
-void DCMotor::setMotorSpeed(int speed) 
+
+
+void Motor::setMotorSpeed(int speed) 
 {
 	analogWrite(enable, speed);
 }
