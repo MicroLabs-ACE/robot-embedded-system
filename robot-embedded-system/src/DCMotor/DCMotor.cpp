@@ -34,8 +34,6 @@ void DCMotor::setMotorRotation(int rotation)
 	}
 }
 
-}
-
 void DCMotor::setMotorSpeed(int speed) 
 {
 	analogWrite(enable, speed);
