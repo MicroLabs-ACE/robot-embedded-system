@@ -5,15 +5,13 @@ class DCMotor
 {
 public:
     DCMotor(int input0, int input1, int enable);
-
-    int input0;
-    int input1;
-    int enable;
-
-    int* getPins();
+    void setMotorRotation(int rotation);
+    void setMotorSpeed(int speed);
 
 private:
-    int pins[3];
+	int input0;
+    int input1;
+    int enable;
 };
 
 #endif
