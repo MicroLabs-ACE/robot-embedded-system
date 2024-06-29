@@ -1,6 +1,6 @@
-#include "DCMotor.h"
+#include "Motor.h"
 
-DCMotor dcMotor(25, 26, 27);
+Motor dcMotor(25, 26, 27);
 
 void setup()
 {

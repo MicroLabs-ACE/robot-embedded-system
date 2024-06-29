@@ -3,7 +3,7 @@
 #include <WiFi.h>
 #include "LittleFS.h"
 
-struct DCMotor {
+struct Motor {
   int input0;
   int input1;
   int enable;
@@ -19,10 +19,10 @@ int highSpeed = 153;
 int lowSpeed = 77;
 int speedLevel = 3;
 
-DCMotor motorLeft;
-DCMotor motorRight;
+Motor motorLeft;
+Motor motorRight;
 
-void setDCMotor(DCMotor &dcMotor, int input0, int input1, int enable) {
+void setDCMotor(Motor &dcMotor, int input0, int input1, int enable) {
   dcMotor.input0 = input0;
   dcMotor.input1 = input1;
   dcMotor.enable = enable;
@@ -32,7 +32,7 @@ void setDCMotor(DCMotor &dcMotor, int input0, int input1, int enable) {
   pinMode(dcMotor.enable, OUTPUT);
 }
 
-void setMotorData(DCMotor &dcMotor, MotorRotation rotation, int speed) {
+void setMotorData(Motor &dcMotor, MotorRotation rotation, int speed) {
   switch (rotation) {
     case CW:
       digitalWrite(dcMotor.input0, HIGH);
