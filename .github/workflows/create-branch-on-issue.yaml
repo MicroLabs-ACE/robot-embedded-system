@@ -21,7 +21,7 @@ jobs:
           LABELS="${{ join(github.event.issue.labels.*.name, ', ') }}"
 
           # Define allowed issue types
-          ALLOWED_TYPES=("feature" "bug" "enhancement" "documentation")
+          ALLOWED_TYPES=("feature" "bug" "enhancement" "fix" "documentation")
 
           # Find the first matching label
           ISSUE_TYPE=""
