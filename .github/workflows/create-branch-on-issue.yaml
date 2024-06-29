@@ -4,6 +4,9 @@ on:
   issues:
     types: [opened, labeled]
 
+permissions:
+  actions: write
+
 jobs:
   create_branch:
     runs-on: ubuntu-latest
@@ -17,10 +20,10 @@ jobs:
         run: |
           # Get the labels
           LABELS="${{ join(github.event.issue.labels.*.name, ', ') }}"
-          
+
           # Define allowed issue types
           ALLOWED_TYPES=("feature" "bug" "enhancement" "documentation")
-          
+
           # Find the first matching label
           ISSUE_TYPE=""
           for type in "${ALLOWED_TYPES[@]}"; do
