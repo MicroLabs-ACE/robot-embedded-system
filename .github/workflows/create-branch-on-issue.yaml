@@ -17,10 +17,10 @@ jobs:
         run: |
           # Get the labels
           LABELS="${{ join(github.event.issue.labels.*.name, ', ') }}"
-
+          
           # Define allowed issue types
           ALLOWED_TYPES=("feature" "bug" "enhancement" "documentation")
-
+          
           # Find the first matching label
           ISSUE_TYPE=""
           for type in "${ALLOWED_TYPES[@]}"; do
@@ -38,11 +38,14 @@ jobs:
           # Remove any [TYPE] prefix from the title if it exists
           TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
 
-          # Convert title to lowercase and replace spaces with hyphens
-          BRANCH_NAME=$(echo "${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g')
+          # Convert title to lowercase, replace spaces with hyphens, and remove invalid characters
+          BRANCH_NAME=$(echo "${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
 
           # Create the final branch name
           BRANCH_NAME="${ISSUE_TYPE}-${BRANCH_NAME}"
+
+          # Truncate branch name if it's too long (GitHub has a 255 character limit)
+          BRANCH_NAME="${BRANCH_NAME:0:255}"
 
           # Check if the branch already exists
           if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
