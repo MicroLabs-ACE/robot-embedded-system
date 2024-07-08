@@ -38,7 +38,7 @@ jobs:
           fi
 
           # Remove any [TYPE] prefix from the title if it exists
-          TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
+          TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.id }}-${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
 
           # Convert title to lowercase, replace spaces with hyphens, and remove invalid characters
           BRANCH_NAME=$(echo "${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
