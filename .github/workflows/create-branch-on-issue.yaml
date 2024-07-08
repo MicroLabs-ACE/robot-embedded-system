@@ -41,7 +41,7 @@ jobs:
           TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
 
           # Convert title to lowercase, replace spaces with hyphens, and remove invalid characters
-          BRANCH_NAME=$(echo " ${{ github.event.issue.number }} -${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+          BRANCH_NAME=$(echo " ${{ github.event.issue.number }}-${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
 
           # Create the final branch name
           BRANCH_NAME="${ISSUE_TYPE}-${BRANCH_NAME}"
