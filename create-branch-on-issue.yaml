@@ -1,0 +1,66 @@
+name: Create Branch on Issue Creation
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions: write-all
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create branch
+        run: |
+          # Get the labels
+          LABELS="${{ join(github.event.issue.labels.*.name, ', ') }}"
+
+          # Define allowed issue types
+          ALLOWED_TYPES=("feature" "bug" "enhancement" "fix" "documentation")
+
+          # Find the first matching label
+          ISSUE_TYPE=""
+          for type in "${ALLOWED_TYPES[@]}"; do
+            if [[ $LABELS == *"$type"* ]]; then
+              ISSUE_TYPE="$type"
+              break
+            fi
+          done
+
+          if [ -z "$ISSUE_TYPE" ]; then
+            echo "No recognized issue type label found. Exiting."
+            exit 1
+          fi
+
+          # Remove any [TYPE] prefix from the title if it exists
+          TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.id }}-${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
+
+          # Convert title to lowercase, replace spaces with hyphens, and remove invalid characters
+          BRANCH_NAME=$(echo "${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+
+          # Create the final branch name
+          BRANCH_NAME="${ISSUE_TYPE}-${BRANCH_NAME}"
+
+          # Truncate branch name if it's too long (GitHub has a 255 character limit)
+          BRANCH_NAME="${BRANCH_NAME:0:255}"
+
+          # Check if the branch already exists
+          if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
+            echo "Branch $BRANCH_NAME already exists. Skipping branch creation."
+          else
+            echo "Creating new branch: $BRANCH_NAME"
+            # Create and push the new branch
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git checkout -b $BRANCH_NAME
+            git push origin $BRANCH_NAME
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      
