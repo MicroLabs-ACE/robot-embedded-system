@@ -1,4 +1,4 @@
-name: Create Branch on Issue Creation
+name: Issue Branch Creation and Linking
 
 on:
   issues:
@@ -7,7 +7,7 @@ on:
 permissions: write-all
 
 jobs:
-  create_branch:
+  create_and_link_branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,7 +15,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create branch
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo $GITHUB_TOKEN | gh auth login --with-token
+
+      - name: Create branch and link to issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Get the labels
           LABELS="${{ join(github.event.issue.labels.*.name, ', ') }}"
@@ -38,7 +50,7 @@ jobs:
           fi
 
           # Remove any [TYPE] prefix from the title if it exists
-          TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
+          TITLE_WITHOUT_PREFIX=$(echo "${{ github.event.issue.id }}-${{ github.event.issue.title }}" | sed 's/^\[[^]]*\] //')
 
           # Convert title to lowercase, replace spaces with hyphens, and remove invalid characters
           BRANCH_NAME=$(echo "${TITLE_WITHOUT_PREFIX}" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-zA-Z0-9-]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
@@ -60,5 +72,13 @@ jobs:
             git checkout -b $BRANCH_NAME
             git push origin $BRANCH_NAME
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # Extract the issue number from the branch name
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            echo "Linking branch $BRANCH_NAME to issue #$ISSUE_NUMBER"
+            gh issue develop $ISSUE_NUMBER --name $BRANCH_NAME
+          else
+            echo "No issue number found. Skipping link."
+          fi
