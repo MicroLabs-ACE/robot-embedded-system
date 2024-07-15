@@ -9,6 +9,12 @@ TwoWheeledMotorSystem::TwoWheeledMotorSystem(int leftInput0, int leftInput1, int
 
 void TwoWheeledMotorSystem::control(const char *direction)
 {
+
+  if (!isOn) {
+    Serial.println("System Off");
+    return;
+  }
+  
   if (strcmp(direction, "OO") == 0) // Origin - No movement
   {
     this->leftMotor.setMotorData(Stop, ZERO);
@@ -52,6 +58,38 @@ void TwoWheeledMotorSystem::control(const char *direction)
   else if (strcmp(direction, "SE") == 0) // SouthEast - BackwardRight - Curved Path Turning
   {
     this->leftMotor.setMotorData(AntiCW, level);
+    this->rightMotor.setMotorData(Stop, ZERO);
+  }
+
+  printDirection(direction)
+}
+
+
+void TwoWheeledMotorSystem::printDirection(const char *direction){
+  static const std::unordered_map<std::string, std::string> directionMap = {
+    {"OO", "Origin"},
+    {"NO", "North"},
+    {"SO", "South"},
+    {"OW", "West"},
+    {"OE", "East"},
+    {"NW", "NorthWest"},
+    {"NE", "NorthEast"},
+    {"SW", "SouthWest"},
+    {"SE", "SouthEast"}
+  };
+
+  auto it = directionMap.find(direction);
+  if (it != directionMap.end()){
+    Serial.println(it->second.c_str());
+  } else {
+    Serial.println("Invalid direction");
+  }
+}
+
+void TwoWheeledMotorSystem::powerControl(bool state) {
+  this->isOn = state;
+  if (!isOn) {
+    this->leftMotor.setMotorData(Stop, ZERO);
     this->rightMotor.setMotorData(Stop, ZERO);
   }
 }
