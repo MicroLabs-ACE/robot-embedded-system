@@ -25,6 +25,7 @@ function LengthAndWidthForm({ onChange }) {
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
+
       <label>
         Length:
         <input
