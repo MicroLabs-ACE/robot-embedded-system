@@ -11,6 +11,7 @@ function Switch() {
     <label>
       <input type="checkbox" checked={onOffState} onChange={handleChange} />
       {onOffState ? "On" : "Off"}
+      <p className="text-[50px]">pppp</p>
     </label>
   );
 }
