@@ -29,7 +29,7 @@ const Notification = () => {
     <div className="fixed rounded-3xl  bottom-0 py-5 justify-center w-full left-0 right-0 mx-autop bg-black ">
       <div className="flex w-[70%] md:w-[400px] mx-auto justify-between">
         {icons.map((icon, index) => {
-          if (index == activeIcon)
+          if (index === activeIcon)
             return (
               <button
                 onClick={() => setActiveIcon(index)}

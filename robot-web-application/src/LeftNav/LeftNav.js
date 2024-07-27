@@ -9,7 +9,7 @@ const LeftNav = () => {
     },
     {
       id: "2",
-      name: "streamline:padlock-square-1",
+      name: "humbleicons:power",
     },
     {
       id: "3",
@@ -71,39 +71,6 @@ const LeftNav = () => {
       </div>
       <div className="flex py-2 bg-[#017AFF] px-3 flex-col gap-4 rounded-xl items-start w-full">
         <span className="capitalize text-white">energy consumption</span>
-        {/* <div className="flex w-full justify-between">
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-          <div className="h-[40px] w-[1px] bg-white" />
-        </div> */}
         <div className="w-full flex justify-between">
           <div className="flex flex-col items-center gap-1">
             <p className="text-white  text-[18px] ">
