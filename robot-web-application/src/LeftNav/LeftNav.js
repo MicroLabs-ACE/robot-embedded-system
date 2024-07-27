@@ -2,34 +2,30 @@ import React, { useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 const LeftNav = () => {
-  const icons = [
-    {
-      id: "1",
-      name: "bi:wifi",
-    },
-    {
-      id: "2",
-      name: "humbleicons:power",
-    },
-    {
-      id: "3",
-      name: "solar:microphone-outline",
-    },
-    {
-      id: "4",
-      name: "fluent:speaker-2-20-regular",
-    },
-  ];
   const activeGearClassAttributes =
     "text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize";
   const inactiveGearClassAttributes =
     "bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize";
-  const [activeIcon, setActiveIcon] = useState();
+
+  const activeStateClassAttributes =
+    "flex rounded-lg items-center bg-[#017AFF] justify-center py-4 px-6";
+  const inactiveStateClassAttributes =
+    "flex rounded-lg bg-black  items-center justify-center py-4 px-6";
   const [gear, setGear] = useState(0);
+  const [wifi, setWifi] = useState(0);
+  const [power, setPower] = useState(0);
+  const [voice, setVoice] = useState(0);
+  const [speaker, setSpeaker] = useState(0);
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
-      <h1>{gear}</h1>
+      <h1>
+        {gear}
+        {Number(power)}
+        {Number(wifi)}
+        {Number(voice)}
+        {Number(speaker)}
+      </h1>
       <img src="robot.png" alt="robot" className="w-full mx-auto" />
       <div className="flex w-full justify-between">
         <div className="pl-3 flex justify-between flex-col w-[46%] rounded-xl py-2 bg-[#017AFF] text-white">
@@ -117,25 +113,44 @@ const LeftNav = () => {
       </div>
       <div className=" hidden md:flex w-full flex-col gap-5 items-start">
         <div className="flex w-full justify-between gap-6 ">
-          {icons.map((icon, index) => {
-            if (index === activeIcon)
-              return (
-                <button
-                  onClick={() => setActiveIcon(index)}
-                  className=" flex rounded-lg items-center bg-[#017AFF] justify-center py-4 px-6 "
-                >
-                  <Icon icon={icon.name} color="white" fontSize={20} />
-                </button>
-              );
-            return (
-              <button
-                onClick={() => setActiveIcon(index)}
-                className=" flex rounded-lg bg-black  items-center justify-center py-4 px-6 "
-              >
-                <Icon icon={icon.name} color="#646464" fontSize={20} />
-              </button>
-            );
-          })}
+          <button
+            onClick={() => setPower(!power)}
+            className={
+              power ? activeStateClassAttributes : inactiveStateClassAttributes
+            }
+          >
+            <Icon icon="humbleicons:power" color="white" fontSize={20} />
+          </button>
+          <button
+            onClick={() => setWifi(!wifi)}
+            className={
+              wifi ? activeStateClassAttributes : inactiveStateClassAttributes
+            }
+          >
+            <Icon icon="bi:wifi" color="white" fontSize={20} />
+          </button>
+          <button
+            onClick={() => setVoice(!voice)}
+            className={
+              voice ? activeStateClassAttributes : inactiveStateClassAttributes
+            }
+          >
+            <Icon icon="solar:microphone-outline" color="white" fontSize={20} />
+          </button>
+          <button
+            onClick={() => setSpeaker(!speaker)}
+            className={
+              speaker
+                ? activeStateClassAttributes
+                : inactiveStateClassAttributes
+            }
+          >
+            <Icon
+              icon="fluent:speaker-2-20-regular"
+              color="white"
+              fontSize={20}
+            />
+          </button>
         </div>
       </div>
     </div>
