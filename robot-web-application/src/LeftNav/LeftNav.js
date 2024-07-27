@@ -20,25 +20,9 @@ const LeftNav = () => {
       name: "fluent:speaker-2-20-regular",
     },
   ];
-  const gears = [
-    {
-      id: "Park",
-      name: "P",
-    },
-    {
-      id: "Reverse",
-      name: "R",
-    },
-    {
-      id: "Neutral",
-      name: "N",
-    },
-    {
-      id: "Drive",
-      name: "D",
-    },
-  ];
+
   const [activeIcon, setActiveIcon] = useState();
+  const [gear, setGear] = useState(0);
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
@@ -52,18 +36,27 @@ const LeftNav = () => {
         </div>
         <div className="flex w-[46%] self-end text-white flex-col gap-1">
           <div className="flex justify-between  md:gap-4 ">
-            <button className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize">
+            <button
+              onClick={setGear(0)}
+              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+            >
               p
             </button>
-            <button className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize">
+            <button
+              onClick={setGear(1)}
+              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+            >
               1
             </button>
           </div>
-          <div className="flex justify-between  md:gap-4">
+          <div onClick={setGear(3)} className="flex justify-between  md:gap-4">
             <button className="text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize">
               3
             </button>
-            <button className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize">
+            <button
+              onClick={setGear(2)}
+              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+            >
               2
             </button>
           </div>
