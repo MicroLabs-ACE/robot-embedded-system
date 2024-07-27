@@ -20,12 +20,16 @@ const LeftNav = () => {
       name: "fluent:speaker-2-20-regular",
     },
   ];
-
+  const activeGearClassAttributes =
+    "text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize";
+  const inactiveGearClassAttributes =
+    "bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize";
   const [activeIcon, setActiveIcon] = useState();
   const [gear, setGear] = useState(0);
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
+      <h1>{gear}</h1>
       <img src="robot.png" alt="robot" className="w-full mx-auto" />
       <div className="flex w-full justify-between">
         <div className="pl-3 flex justify-between flex-col w-[46%] rounded-xl py-2 bg-[#017AFF] text-white">
@@ -35,27 +39,46 @@ const LeftNav = () => {
           </p>
         </div>
         <div className="flex w-[46%] self-end text-white flex-col gap-1">
-          <div className="flex justify-between  md:gap-4 ">
+          <div className="flex justify-between md:gap-4 ">
             <button
-              onClick={setGear(0)}
-              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+              onClick={() => setGear(0)}
+              className={
+                gear === 0
+                  ? activeGearClassAttributes
+                  : inactiveGearClassAttributes
+              }
             >
               p
             </button>
             <button
-              onClick={setGear(1)}
-              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+              onClick={() => setGear(1)}
+              className={
+                gear === 1
+                  ? activeGearClassAttributes
+                  : inactiveGearClassAttributes
+              }
             >
               1
             </button>
           </div>
-          <div onClick={setGear(3)} className="flex justify-between  md:gap-4">
-            <button className="text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize">
+          <div className="flex justify-between md:gap-4">
+            <button
+              onClick={() => setGear(3)}
+              className={
+                gear === 3
+                  ? activeGearClassAttributes
+                  : inactiveGearClassAttributes
+              }
+            >
               3
             </button>
             <button
-              onClick={setGear(2)}
-              className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize"
+              onClick={() => setGear(2)}
+              className={
+                gear === 2
+                  ? activeGearClassAttributes
+                  : inactiveGearClassAttributes
+              }
             >
               2
             </button>
