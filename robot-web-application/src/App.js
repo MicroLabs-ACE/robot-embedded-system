@@ -1,6 +1,3 @@
-import GearSystem from "./GearSystem";
-import Switch from "./Switch";
-import Map from "./Map";
 import "../src/index.css";
 import LeftNav from "./LeftNav/LeftNav";
 import MapDiagram from "./MapDiagram/MapDiagram";

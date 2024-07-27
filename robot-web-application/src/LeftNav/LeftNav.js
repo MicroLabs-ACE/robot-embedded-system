@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Car from "../../src/car.jpg";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 const LeftNav = () => {
@@ -43,8 +42,7 @@ const LeftNav = () => {
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
-      <img src={Car} className="w-full mx-auto" />
-
+      <img src="robot.png" alt="robot" className="w-full mx-auto" />
       <div className="flex w-full justify-between">
         <div className="pl-3 flex justify-between flex-col w-[46%] rounded-xl py-2 bg-[#017AFF] text-white">
           <span className="md:text-xl capitalize">speed</span>
@@ -58,15 +56,15 @@ const LeftNav = () => {
               p
             </button>
             <button className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize">
-              r
+              1
             </button>
           </div>
           <div className="flex justify-between  md:gap-4">
             <button className="text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize">
-              n
+              3
             </button>
             <button className="bg-black md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl capitalize">
-              d
+              2
             </button>
           </div>
         </div>
@@ -137,7 +135,7 @@ const LeftNav = () => {
       <div className=" hidden md:flex w-full flex-col gap-5 items-start">
         <div className="flex w-full justify-between gap-6 ">
           {icons.map((icon, index) => {
-            if (index == activeIcon)
+            if (index === activeIcon)
               return (
                 <button
                   onClick={() => setActiveIcon(index)}
