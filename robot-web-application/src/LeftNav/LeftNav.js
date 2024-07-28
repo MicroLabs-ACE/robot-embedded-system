@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Modal from "../Modal/Modal";
 
 const LeftNav = () => {
   const activeGearClassAttributes =
@@ -12,10 +13,10 @@ const LeftNav = () => {
   const inactiveStateClassAttributes =
     "flex rounded-lg bg-black  items-center justify-center py-4 px-6";
   const [gear, setGear] = useState(0);
-  const [wifi, setWifi] = useState(0);
-  const [power, setPower] = useState(0);
-  const [voice, setVoice] = useState(0);
-  const [speaker, setSpeaker] = useState(0);
+  const [wifi, setWifi] = useState(false);
+  const [power, setPower] = useState(false);
+  const [voice, setVoice] = useState(false);
+  const [speaker, setSpeaker] = useState(false);
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
@@ -130,7 +131,7 @@ const LeftNav = () => {
             <Icon icon="bi:wifi" color="white" fontSize={20} />
           </button>
           <button
-            onClick={() => setVoice(!voice)}
+            onClick={() => setVoice(true)}
             className={
               voice ? activeStateClassAttributes : inactiveStateClassAttributes
             }
@@ -153,6 +154,26 @@ const LeftNav = () => {
           </button>
         </div>
       </div>
+      <Modal open={voice} onClose={() => setVoice(false)}>
+        <div className="text-center w-56">
+          <Icon icon="solar:microphone-outline" color="white" fontSize={20} />
+          <div className="mx-auto my-4 w-48">
+            <h3 className="text-lg font-black text-gray-800">Confirm Delete</h3>
+            <p className="text-sm text-gray-500">
+              Are you sure you want to delete this item?
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <button className="btn btn-danger w-full">Delete</button>
+            <button
+              className="btn btn-light w-full"
+              onClick={() => setVoice(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
