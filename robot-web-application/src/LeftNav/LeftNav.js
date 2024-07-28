@@ -20,13 +20,6 @@ const LeftNav = () => {
 
   return (
     <div className="w-full md:w-[50%] lg:w-[38%] border-2 border-[#636263] rounded-3xl items-start flex flex-col gap-5 p-4">
-      <h1>
-        {gear}
-        {Number(power)}
-        {Number(wifi)}
-        {Number(voice)}
-        {Number(speaker)}
-      </h1>
       <img src="robot.png" alt="robot" className="w-full mx-auto" />
       <div className="flex w-full justify-between">
         <div className="pl-3 flex justify-between flex-col w-[46%] rounded-xl py-2 bg-[#017AFF] text-white">

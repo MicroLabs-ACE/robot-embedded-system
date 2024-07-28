@@ -9,20 +9,16 @@ const Notification = () => {
     },
     {
       id: "2",
-      name: "material-symbols:widgets",
+      name: "mdi:gamepad-circle-outline",
     },
     {
       id: "3",
-      name: "weui:music-filled",
+      name: "basil:chat-outline",
     },
     {
       id: "4",
-      name: "icon-park-outline:phone-call",
+      name: "material-symbols:help-outline",
     },
-    // {
-    //   id: "4",
-    //   name: "mdi:bus",
-    // },
   ];
   const [activeIcon, setActiveIcon] = useState(0);
   return (
