@@ -29,7 +29,7 @@ export default function Navigation() {
             return (
               <button
                 onClick={() => setActiveIcon(index)}
-                className=" flex rounded-lg items-center bg-red-500 justify-center py-4 px-6 "
+                className=" flex rounded-lg items-center bg-[017AFF] justify-center py-4 px-6 "
               >
                 <Icon icon={icon.name} color="white" fontSize={18} />
               </button>
