@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Modal from "../Modal/Modal";
+import RecordingModal from "./RecordingModal";
 
-const LeftNav = () => {
+export default function Controls() {
   const activeGearClassAttributes =
     "text-white md:text-[22px] w-[40%] md:w-[100px] py-2 rounded-xl bg-[#017AFF] capitalize";
   const inactiveGearClassAttributes =
@@ -147,28 +147,7 @@ const LeftNav = () => {
           </button>
         </div>
       </div>
-      <Modal open={voice} onClose={() => setVoice(false)}>
-        <div className="text-center w-56">
-          <Icon icon="solar:microphone-outline" color="white" fontSize={20} />
-          <div className="mx-auto my-4 w-48">
-            <h3 className="text-lg font-black text-gray-800">Confirm Delete</h3>
-            <p className="text-sm text-gray-500">
-              Are you sure you want to delete this item?
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <button className="btn btn-danger w-full">Delete</button>
-            <button
-              className="btn btn-light w-full"
-              onClick={() => setVoice(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <RecordingModal open={voice} onClose={() => setVoice(false)} />
     </div>
   );
-};
-
-export default LeftNav;
+}

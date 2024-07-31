@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 
-const Notification = () => {
+export default function Navigation() {
   const icons = [
     {
       id: "1",
@@ -29,7 +29,7 @@ const Notification = () => {
             return (
               <button
                 onClick={() => setActiveIcon(index)}
-                className=" flex rounded-lg items-center bg-[#017AFF] justify-center py-4 px-6 "
+                className=" flex rounded-lg items-center bg-[017AFF] justify-center py-4 px-6 "
               >
                 <Icon icon={icon.name} color="white" fontSize={18} />
               </button>
@@ -46,6 +46,4 @@ const Notification = () => {
       </div>
     </div>
   );
-};
-
-export default Notification;
+}
