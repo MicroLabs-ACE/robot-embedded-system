@@ -6,6 +6,9 @@ export default function RecordingModal({ open, onClose }) {
   const [audioURL, setAudioURL] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isListening, setIsListening] = useState(false);
+  const [transcription, setTranscription] = useState("");
+  const [response, setResponse] = useState("");
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
@@ -58,6 +61,7 @@ export default function RecordingModal({ open, onClose }) {
   const cancelRecording = () => {
     setAudioURL(null);
     setRecordingTime(0);
+    setTranscription("");
   };
 
   const formatTime = (seconds) => {
@@ -66,6 +70,139 @@ export default function RecordingModal({ open, onClose }) {
     return `${mins.toString().padStart(2, "0")}:${secs
       .toString()
       .padStart(2, "0")}`;
+  };
+
+  const transcribeAudio = () => {
+    if (!audioURL) {
+      console.error("No audio available for transcription");
+      return;
+    }
+
+    setIsTranscribing(true);
+
+    const audioElement = new Audio(audioURL);
+    const recognition = new (window.SpeechRecognition ||
+      window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setTranscription(transcript);
+      setIsTranscribing(false);
+      getIntent(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+      setIsTranscribing(false);
+    };
+
+    recognition.onend = () => {
+      audioElement.pause();
+      setIsTranscribing(false);
+    };
+
+    audioElement.onended = () => {
+      recognition.stop();
+    };
+
+    recognition.start();
+    audioElement.play();
+  };
+
+  const getIntent = async (transcript) => {
+    try {
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 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`,
+          },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: "system",
+                content: `
+You are a fumigation robot, with the ability to converse, deployed in hospital wards. This means you would be interacting with patients, doctors, nurses and other hospital personnel.
+You are required to respond to requests by each of the these entities.
+You are to first try and decipher based on the request which entity is requesting.
+You are to output your response in form of JSON.
+
+Here are example requests and their corresponding responses:
+
+Request: "i feel like vomiting",
+
+Response:
+{
+    "entity": "patient",
+    "message": "Okay. I would get someone to help you.",
+    "action": "contact_personnel"
+}
+
+--------------------------------------------------------------
+
+Request: "i am feeling feverish",
+
+Response:
+{
+    "entity": "patient",
+    "message": "Please stand still while I take your temperature.",
+    "action": "measure_temperature"
+}
+
+--------------------------------------------------------------
+
+Request: "excuse me i am having trouble taking my drugs"
+
+Response:
+{
+    "entity": "patient",
+    "message": "Someone will soon be here to help you.",
+    "action": "contact_personnel"
+}
+
+--------------------------------------------------------------
+
+Request: "i feel like vomiting"
+
+Response:
+
+{
+    "entity": "patient",
+    "message": "Okay. I would get someone to help you."
+    "action": "contact_personnel"
+}
+
+--------------------------------------------------------------
+
+Request: "i am scared about the surgery"
+
+Response:
+{
+    "entity": "patient",
+    "message": "I understand, it's normal to feel anxious. It is a standard procedure and know that you are in the hands of capable doctors.",
+    "action": ""
+}
+`,
+              },
+              {
+                role: "user",
+                content: JSON.stringify(transcript),
+              },
+            ],
+            model: "llama3-8b-8192",
+          }),
+        }
+      );
+      const data = await response.json();
+      setResponse(data.choices[0].message.content);
+    } catch (error) {
+      console.error.apply("Error: ", error);
+    }
   };
 
   return (
@@ -129,20 +266,32 @@ export default function RecordingModal({ open, onClose }) {
                 <button
                   onClick={cancelRecording}
                   className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
-                  disabled={isListening}
+                  disabled={isListening || isTranscribing}
                 >
                   Re-record
                 </button>
                 <button
-                  onClick={() => {
-                    /* Handle confirmation */
-                  }}
+                  onClick={transcribeAudio}
                   className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
-                  disabled={isListening}
+                  disabled={isListening || isTranscribing}
                 >
-                  Confirm
+                  {isTranscribing ? "Transcribing..." : "Transcribe"}
                 </button>
               </div>
+            </div>
+          )}
+
+          {transcription && (
+            <div className="mt-4">
+              <h3 className="font-medium mb-2">Transcription:</h3>
+              <p className="text-sm bg-gray-100 p-2 rounded">{transcription}</p>
+            </div>
+          )}
+
+          {response && (
+            <div className="mt-4">
+              <h3 className="font-medium mb-2">Response:</h3>
+              <p className="text-sm bg-gray-100 p-2 rounded">{response}</p>
             </div>
           )}
         </div>
