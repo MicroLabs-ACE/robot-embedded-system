@@ -6,24 +6,24 @@
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
 
-struct Router
-{
-    const char *path;                 // The URL path for this route (e.g., "/", "/sample")
-    WebRequestMethod method;          // The HTTP method for this route (e.g., HTTP_GET)
-    ArRequestHandlerFunction handler; // Pointer to the function that handles this route
+typedef void (*ArRequestHandlerFunction)(AsyncWebServerRequest *request);
+
+struct Router {
+  const char *path;
+  ArRequestHandlerFunction handler;
 };
 
-class WiFiRouter
-{
-
+class WiFiRouter {
 public:
-    Router getRouters();
-    void runWebServer();
+  WiFiRouter();
+  Router *getRouters();
+  void runWebServer();
 
 private:
-    void handleRoot(AsyncWebServerRequest *request);
-    void handleSample(AsyncWebServerRequest *request);
-    void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
-}
+  static void handleRoot(AsyncWebServerRequest *request);
+  static void handleSample(AsyncWebServerRequest *request);
+  AsyncWebServer *webserver;
+  AsyncWebSocket *websocket;
+};
 
 #endif // WIFI_ROUTER_HPP
