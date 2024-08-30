@@ -7,9 +7,13 @@
 #include <WiFi.h>
 
 enum WiFiConnectionType { STATION, ACCESS_POINT };
-typedef void (*ArRequestHandlerFunction)(AsyncWebServerRequest *request);
+
+// Remove this line:
+// typedef void (*ArRequestHandlerFunction)(AsyncWebServerRequest *request);
+
 struct Route {
   const char *path;
+  WebRequestMethodComposite method;
   ArRequestHandlerFunction handler;
 };
 
@@ -23,10 +27,9 @@ private:
                                AsyncWebSocketClient *client, AwsEventType type,
                                void *arg, uint8_t *data, size_t len);
   static void runWebServer();
-
   // Routes
   static void handleRoot(AsyncWebServerRequest *request);
-  static void handleSample(AsyncWebServerRequest *request); // New route handler
+  static void handleSample(AsyncWebServerRequest *request);
 
 public:
   static bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,

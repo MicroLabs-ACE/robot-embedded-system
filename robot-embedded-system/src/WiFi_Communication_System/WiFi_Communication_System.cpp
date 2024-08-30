@@ -6,12 +6,6 @@ bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
   return WiFi.config(localIPAddress, gateway, subnet);
 }
 
-bool WiFiCommunicationSystem::setStaticIPAddress(
-    IPAddress localIPAddress(192, 168, 1, 184),
-    IPAddress gateway(192, 168, 1, 1), IPAddress subnet(255, 255, 0, 0)) {
-  return WiFi.config(localIPAddress, gateway, subnet);
-}
-
 bool WiFiCommunicationSystem::wifiAsStation(const char *ssid,
                                             const char *password) {
   int numberOfRetries = 0;
@@ -21,7 +15,6 @@ bool WiFiCommunicationSystem::wifiAsStation(const char *ssid,
     delay(1000);
     numberOfRetries++;
   }
-
   return WiFi.status() == WL_CONNECTED;
 }
 
@@ -35,7 +28,6 @@ void WiFiCommunicationSystem::handleRoot(AsyncWebServerRequest *request) {
   DynamicJsonDocument responseJSON(1024);
   responseJSON["message"] = "Hello, world.";
   responseJSON["data"] = remoteIP.toString();
-
   String responseString;
   serializeJson(responseJSON, responseString);
   request->send(200, "application/json", responseString);
@@ -51,17 +43,15 @@ void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
                                                uint8_t *data, size_t len) {
   switch (type) {
   case WS_EVT_CONNECT:
+    Serial.println("WebSocket client connected");
     break;
-
   case WS_EVT_DISCONNECT:
+    Serial.println("WebSocket client disconnected");
     break;
-
   case WS_EVT_DATA:
     break;
-
   case WS_EVT_PONG:
   case WS_EVT_ERROR:
-  default:
     break;
   }
 }
@@ -69,16 +59,16 @@ void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
 void WiFiCommunicationSystem::runWebServer() {
   static AsyncWebServer webserver(80);
   static AsyncWebSocket websocket("/ws");
-  websocket.onEvent(WiFiCommunicationSystem::onWebSocketEvent);
+  websocket.onEvent(onWebSocketEvent);
   webserver.addHandler(&websocket);
 
   Route routes[] = {
-      {"/", HTTP_GET, WiFiCommunicationSystem::handleRoot},
-      {"/sample", HTTP_GET, WiFiCommunicationSystem::handleSample},
+      {"/", HTTP_GET, handleRoot},
+      {"/sample", HTTP_GET, handleSample},
   };
 
   for (const auto &route : routes) {
-    webserver.on(route.path, HTTP_GET, route.handler);
+    webserver.on(route.path, route.method, route.handler);
   }
 
   webserver.begin();
@@ -88,33 +78,26 @@ bool WiFiCommunicationSystem::connectWiFi(WiFiConnectionType connectionType,
                                           const char *ssid,
                                           const char *password) {
   bool result = false;
-
   switch (connectionType) {
   case STATION: {
     IPAddress localIPAddress(192, 168, 1, 184);
     IPAddress gateway(192, 168, 1, 1);
     IPAddress subnet(255, 255, 0, 0);
-
-    bool isStaticIPAddress = WiFiCommunicationSystem::setStaticIPAddress(
-        localIPAddress, gateway, subnet);
+    bool isStaticIPAddress =
+        setStaticIPAddress(localIPAddress, gateway, subnet);
     if (!isStaticIPAddress) {
       return false;
     }
-
-    result = WiFiCommunicationSystem::wifiAsStation(ssid, password);
+    result = wifiAsStation(ssid, password);
   } break;
-
   case ACCESS_POINT:
-    result = WiFiCommunicationSystem::wifiAsAccessPoint(ssid, password);
+    result = wifiAsAccessPoint(ssid, password);
     break;
-
   default:
     break;
   }
-
   if (result) {
-    WiFiCommunicationSystem::runWebServer();
+    runWebServer();
   }
-
   return result;
 }

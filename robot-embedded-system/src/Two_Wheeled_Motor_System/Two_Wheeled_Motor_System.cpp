@@ -1,85 +1,63 @@
-#include <cstring>
 #include "Two_Wheeled_Motor_System.hpp"
 
-TwoWheeledMotorSystem::TwoWheeledMotorSystem(int leftInput0, int leftInput1, int leftEnable, int rightInput0, int rightInput1, int rightEnable)
-    : leftMotor(leftInput0, leftInput1, leftEnable), rightMotor(rightInput0, rightInput1, rightEnable), level(THREE)
-{
+const std::unordered_map<std::string, std::string>
+    TwoWheeledMotorSystem::directionMap = {
+        {"OO", "Origin"},    {"NO", "North"},     {"SO", "South"},
+        {"OW", "West"},      {"OE", "East"},      {"NW", "NorthWest"},
+        {"NE", "NorthEast"}, {"SW", "SouthWest"}, {"SE", "SouthEast"}};
+
+TwoWheeledMotorSystem::TwoWheeledMotorSystem(int leftInput0, int leftInput1,
+                                             int leftEnable, int rightInput0,
+                                             int rightInput1, int rightEnable)
+    : leftMotor(leftInput0, leftInput1, leftEnable),
+      rightMotor(rightInput0, rightInput1, rightEnable), level(THREE),
+      isOn(false) {
   setSpeedLevel(THREE);
 }
 
-void TwoWheeledMotorSystem::control(const char *direction)
-{
-
+void TwoWheeledMotorSystem::control(const char *direction) {
   if (!isOn) {
     Serial.println("System Off");
     return;
   }
-  
-  if (strcmp(direction, "OO") == 0) // Origin - No movement
-  {
-    this->leftMotor.setMotorData(Stop, ZERO);
-    this->rightMotor.setMotorData(Stop, ZERO);
-  }
-  else if (strcmp(direction, "NO") == 0) // North - Forward
-  {
-    this->leftMotor.setMotorData(CW, level);
-    this->rightMotor.setMotorData(CW, level);
-  }
-  else if (strcmp(direction, "SO") == 0) // South - Backward
-  {
-    this->leftMotor.setMotorData(AntiCW, level);
-    this->rightMotor.setMotorData(AntiCW, level);
-  }
-  else if (strcmp(direction, "OW") == 0) // West - Left - Zero Radius Turning
-  {
-    this->leftMotor.setMotorData(AntiCW, level);
-    this->rightMotor.setMotorData(CW, level);
-  }
-  else if (strcmp(direction, "OE") == 0) // East - Right - Zero Radius Turning
-  {
-    this->leftMotor.setMotorData(CW, level);
-    this->rightMotor.setMotorData(AntiCW, level);
-  }
-  else if (strcmp(direction, "NW") == 0) // NorthWest - ForwardLeft - Curved Path Turning
-  {
-    this->leftMotor.setMotorData(Stop, ZERO);
-    this->rightMotor.setMotorData(CW, level);
-  }
-  else if (strcmp(direction, "NE") == 0) // NorthEast - ForwardRight - Curved Path Turning
-  {
-    this->leftMotor.setMotorData(CW, level);
-    this->rightMotor.setMotorData(Stop, ZERO);
-  }
-  else if (strcmp(direction, "SW") == 0) // SouthWest - BackwardLeft - Curved Path Turning
-  {
-    this->leftMotor.setMotorData(Stop, ZERO);
-    this->rightMotor.setMotorData(AntiCW, level);
-  }
-  else if (strcmp(direction, "SE") == 0) // SouthEast - BackwardRight - Curved Path Turning
-  {
-    this->leftMotor.setMotorData(AntiCW, level);
-    this->rightMotor.setMotorData(Stop, ZERO);
+
+  std::string dir(direction);
+
+  if (dir == "OO") { // Origin - No movement
+    leftMotor.setMotorData(Stop, ZERO);
+    rightMotor.setMotorData(Stop, ZERO);
+  } else if (dir == "NO") { // North - Forward
+    leftMotor.setMotorData(CW, level);
+    rightMotor.setMotorData(CW, level);
+  } else if (dir == "SO") { // South - Backward
+    leftMotor.setMotorData(AntiCW, level);
+    rightMotor.setMotorData(AntiCW, level);
+  } else if (dir == "OW") { // West - Left - Zero Radius Turning
+    leftMotor.setMotorData(AntiCW, level);
+    rightMotor.setMotorData(CW, level);
+  } else if (dir == "OE") { // East - Right - Zero Radius Turning
+    leftMotor.setMotorData(CW, level);
+    rightMotor.setMotorData(AntiCW, level);
+  } else if (dir == "NW") { // NorthWest - ForwardLeft - Curved Path Turning
+    leftMotor.setMotorData(CW, static_cast<SpeedLevel>(level / 2));
+    rightMotor.setMotorData(CW, level);
+  } else if (dir == "NE") { // NorthEast - ForwardRight - Curved Path Turning
+    leftMotor.setMotorData(CW, level);
+    rightMotor.setMotorData(CW, static_cast<SpeedLevel>(level / 2));
+  } else if (dir == "SW") { // SouthWest - BackwardLeft - Curved Path Turning
+    leftMotor.setMotorData(AntiCW, static_cast<SpeedLevel>(level / 2));
+    rightMotor.setMotorData(AntiCW, level);
+  } else if (dir == "SE") { // SouthEast - BackwardRight - Curved Path Turning
+    leftMotor.setMotorData(AntiCW, level);
+    rightMotor.setMotorData(AntiCW, static_cast<SpeedLevel>(level / 2));
   }
 
-  printDirection(direction)
+  printDirection(direction);
 }
 
-
-void TwoWheeledMotorSystem::printDirection(const char *direction){
-  static const std::unordered_map<std::string, std::string> directionMap = {
-    {"OO", "Origin"},
-    {"NO", "North"},
-    {"SO", "South"},
-    {"OW", "West"},
-    {"OE", "East"},
-    {"NW", "NorthWest"},
-    {"NE", "NorthEast"},
-    {"SW", "SouthWest"},
-    {"SE", "SouthEast"}
-  };
-
+void TwoWheeledMotorSystem::printDirection(const char *direction) {
   auto it = directionMap.find(direction);
-  if (it != directionMap.end()){
+  if (it != directionMap.end()) {
     Serial.println(it->second.c_str());
   } else {
     Serial.println("Invalid direction");
@@ -87,14 +65,13 @@ void TwoWheeledMotorSystem::printDirection(const char *direction){
 }
 
 void TwoWheeledMotorSystem::powerControl(bool state) {
-  this->isOn = state;
+  isOn = state;
   if (!isOn) {
-    this->leftMotor.setMotorData(Stop, ZERO);
-    this->rightMotor.setMotorData(Stop, ZERO);
+    leftMotor.setMotorData(Stop, ZERO);
+    rightMotor.setMotorData(Stop, ZERO);
   }
 }
 
-void TwoWheeledMotorSystem::setSpeedLevel(SpeedLevel level)
-{
+void TwoWheeledMotorSystem::setSpeedLevel(SpeedLevel level) {
   this->level = level;
 }

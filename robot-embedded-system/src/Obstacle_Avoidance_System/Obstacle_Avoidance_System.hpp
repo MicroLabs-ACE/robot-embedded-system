@@ -1,25 +1,26 @@
 #ifndef OBSTACLE_AVOIDANCE_SYSTEM_HPP
 #define OBSTACLE_AVOIDANCE_SYSTEM_HPP
-
-#include <Arduino.h>
 #include "../Ultrasonic_Sensor/Ultrasonic_Sensor.hpp"
+#include <Arduino.h>
 
-class ObstacleAvoidanceSystem
-{
-    const int RISE_TIME = 10;
-    const int FALL_TIME = 2;
-    const float SPEED_OF_SOUND_MS = 0.036;
-    const int THRESHOLD_CM = 5;
-
+class ObstacleAvoidanceSystem {
 public:
-    bool isWithinThreshold();
+  ObstacleAvoidanceSystem(int leftTrigPin, int leftEchoPin, int middleTrigPin,
+                          int middleEchoPin, int rightTrigPin,
+                          int rightEchoPin);
+  bool isWithinThreshold();
 
 private:
-    UltrasonicSensor leftUSensor;
-    UltrasonicSensor middleUSensor;
-    UltrasonicSensor rightUSensor;
+  static const int RISE_TIME = 10;
+  static const int FALL_TIME = 2;
+  static constexpr float SPEED_OF_SOUND_MS = 0.036;
+  static const int THRESHOLD_CM = 5;
 
-    int getDistance(UltrasonicSensor uSensor);
-}
+  UltrasonicSensor leftUSensor;
+  UltrasonicSensor middleUSensor;
+  UltrasonicSensor rightUSensor;
+
+  int getDistance(const UltrasonicSensor &uSensor);
+};
 
 #endif // OBSTACLE_AVOIDANCE_SYSTEM_HPP
