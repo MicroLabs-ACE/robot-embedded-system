@@ -1,26 +1,28 @@
-#ifndef TWOWHEELED_MOTOR_SYSTEM_HPP
-#define TWOWHEELED_MOTOR_SYSTEM_HPP
+#ifndef TWO_WHEELED_MOTOR_SYSTEM_HPP
+#define TWO_WHEELED_MOTOR_SYSTEM_HPP
 
 #include "../Motor/Motor.hpp"
 #include <Arduino.h>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 class TwoWheeledMotorSystem {
 public:
   TwoWheeledMotorSystem(int leftInput0, int leftInput1, int leftEnable,
                         int rightInput0, int rightInput1, int rightEnable);
-  void control(const char *direction);
-  void setSpeedLevel(SpeedLevel level);
-  void powerControl(bool state);
+  void control(const std::string &command);
+  void power(bool state);
 
 private:
+  std::string extractDirectionFromCommand(const std::string &command);
+  int extractSpeedFromCommand(const std::string &command);
+  void setSpeedLevel(SpeedLevel level);
+
   Motor leftMotor;
   Motor rightMotor;
   SpeedLevel level;
   bool isOn;
-  void printDirection(const char *direction);
   static const std::unordered_map<std::string, std::string> directionMap;
 };
 
-#endif // TWOWHEELED_MOTOR_SYSTEM_HPP
+#endif // TWO_WHEELED_MOTOR_SYSTEM_HPP

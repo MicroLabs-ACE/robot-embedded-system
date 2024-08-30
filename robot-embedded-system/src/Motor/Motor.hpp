@@ -11,11 +11,9 @@ enum MotorRotation
 enum SpeedLevel
 {
     ZERO = 0,
-    ONE = 51,
-    TWO = 102,
-    THREE = 153,
-    FOUR = 204,
-    FIVE = 255
+    ONE = 85,
+    TWO = 170,
+    THREE = 255
 };
 
 class Motor

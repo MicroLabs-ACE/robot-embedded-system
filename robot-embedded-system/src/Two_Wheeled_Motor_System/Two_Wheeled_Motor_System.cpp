@@ -2,69 +2,73 @@
 
 const std::unordered_map<std::string, std::string>
     TwoWheeledMotorSystem::directionMap = {
-        {"OO", "Origin"},    {"NO", "North"},     {"SO", "South"},
-        {"OW", "West"},      {"OE", "East"},      {"NW", "NorthWest"},
-        {"NE", "NorthEast"}, {"SW", "SouthWest"}, {"SE", "SouthEast"}};
+        {"NO", "North"},     {"SO", "South"},     {"OW", "West"},
+        {"OE", "East"},      {"NW", "NorthWest"}, {"NE", "NorthEast"},
+        {"SW", "SouthWest"}, {"SE", "SouthEast"}};
 
 TwoWheeledMotorSystem::TwoWheeledMotorSystem(int leftInput0, int leftInput1,
                                              int leftEnable, int rightInput0,
                                              int rightInput1, int rightEnable)
     : leftMotor(leftInput0, leftInput1, leftEnable),
       rightMotor(rightInput0, rightInput1, rightEnable), level(THREE),
-      isOn(false) {
-  setSpeedLevel(THREE);
-}
+      isOn(false) {}
 
-void TwoWheeledMotorSystem::control(const char *direction) {
+void TwoWheeledMotorSystem::control(const std::string &command) {
   if (!isOn) {
-    Serial.println("System Off");
+    Serial.println("Power Off");
     return;
   }
 
-  std::string dir(direction);
+  std::string direction = extractDirectionFromCommand(command);
+  int speed = extractSpeedFromCommand(command);
+  setSpeedLevel(static_cast<SpeedLevel>(speed));
+  
+  Serial.println(speed);
 
-  if (dir == "OO") { // Origin - No movement
+  if (direction == "OO") { // Origin - No movement
     leftMotor.setMotorData(Stop, ZERO);
     rightMotor.setMotorData(Stop, ZERO);
-  } else if (dir == "NO") { // North - Forward
+    Serial.println("Origin");
+  } else if (direction == "NO") { // North - Forward
     leftMotor.setMotorData(CW, level);
     rightMotor.setMotorData(CW, level);
-  } else if (dir == "SO") { // South - Backward
+    Serial.println("North");
+  } else if (direction == "SO") { // South - Backward
     leftMotor.setMotorData(AntiCW, level);
     rightMotor.setMotorData(AntiCW, level);
-  } else if (dir == "OW") { // West - Left - Zero Radius Turning
+    Serial.println("South");
+  } else if (direction == "OW") { // West - Left - Zero Radius Turning
     leftMotor.setMotorData(AntiCW, level);
     rightMotor.setMotorData(CW, level);
-  } else if (dir == "OE") { // East - Right - Zero Radius Turning
+    Serial.println("West");
+  } else if (direction == "OE") { // East - Right - Zero Radius Turning
     leftMotor.setMotorData(CW, level);
     rightMotor.setMotorData(AntiCW, level);
-  } else if (dir == "NW") { // NorthWest - ForwardLeft - Curved Path Turning
+    Serial.println("East");
+  } else if (direction ==
+             "NW") { // NorthWest - ForwardLeft - Curved Path Turning
     leftMotor.setMotorData(CW, static_cast<SpeedLevel>(level / 2));
     rightMotor.setMotorData(CW, level);
-  } else if (dir == "NE") { // NorthEast - ForwardRight - Curved Path Turning
+    Serial.println("NorthWest");
+  } else if (direction ==
+             "NE") { // NorthEast - ForwardRight - Curved Path Turning
     leftMotor.setMotorData(CW, level);
     rightMotor.setMotorData(CW, static_cast<SpeedLevel>(level / 2));
-  } else if (dir == "SW") { // SouthWest - BackwardLeft - Curved Path Turning
+    Serial.println("NorthEast");
+  } else if (direction ==
+             "SW") { // SouthWest - BackwardLeft - Curved Path Turning
     leftMotor.setMotorData(AntiCW, static_cast<SpeedLevel>(level / 2));
     rightMotor.setMotorData(AntiCW, level);
-  } else if (dir == "SE") { // SouthEast - BackwardRight - Curved Path Turning
+    Serial.println("SouthWest");
+  } else if (direction ==
+             "SE") { // SouthEast - BackwardRight - Curved Path Turning
     leftMotor.setMotorData(AntiCW, level);
     rightMotor.setMotorData(AntiCW, static_cast<SpeedLevel>(level / 2));
-  }
-
-  printDirection(direction);
-}
-
-void TwoWheeledMotorSystem::printDirection(const char *direction) {
-  auto it = directionMap.find(direction);
-  if (it != directionMap.end()) {
-    Serial.println(it->second.c_str());
-  } else {
-    Serial.println("Invalid direction");
+    Serial.println("SouthEast");
   }
 }
 
-void TwoWheeledMotorSystem::powerControl(bool state) {
+void TwoWheeledMotorSystem::power(bool state) {
   isOn = state;
   if (!isOn) {
     leftMotor.setMotorData(Stop, ZERO);
@@ -74,4 +78,13 @@ void TwoWheeledMotorSystem::powerControl(bool state) {
 
 void TwoWheeledMotorSystem::setSpeedLevel(SpeedLevel level) {
   this->level = level;
+}
+
+int TwoWheeledMotorSystem::extractSpeedFromCommand(const std::string &command) {
+  return command.back() - '0';
+}
+
+std::string
+TwoWheeledMotorSystem::extractDirectionFromCommand(const std::string &command) {
+  return command.substr(0, 2);
 }

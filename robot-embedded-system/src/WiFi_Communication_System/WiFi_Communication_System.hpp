@@ -1,15 +1,13 @@
 #ifndef WIFI_COMMUNICATION_SYSTEM_HPP
 #define WIFI_COMMUNICATION_SYSTEM_HPP
 
+#include <Arduino.h>
 #include <ArduinoJson.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
 
 enum WiFiConnectionType { STATION, ACCESS_POINT };
-
-// Remove this line:
-// typedef void (*ArRequestHandlerFunction)(AsyncWebServerRequest *request);
 
 struct Route {
   const char *path;
@@ -18,6 +16,11 @@ struct Route {
 };
 
 class WiFiCommunicationSystem {
+public:
+  static bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
+                          const char *password);
+  static String getLastReceivedData();
+
 private:
   static bool setStaticIPAddress(IPAddress localIPAddress, IPAddress gateway,
                                  IPAddress subnet);
@@ -27,13 +30,11 @@ private:
                                AsyncWebSocketClient *client, AwsEventType type,
                                void *arg, uint8_t *data, size_t len);
   static void runWebServer();
-  // Routes
+  static void handleWebSocketData(void *arg, uint8_t *data, size_t len);
   static void handleRoot(AsyncWebServerRequest *request);
   static void handleSample(AsyncWebServerRequest *request);
 
-public:
-  static bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
-                          const char *password);
+  static String lastReceivedData;
 };
 
 #endif // WIFI_COMMUNICATION_SYSTEM_HPP

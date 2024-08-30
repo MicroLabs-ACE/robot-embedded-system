@@ -1,5 +1,7 @@
 #include "WiFi_Communication_System.hpp"
 
+String WiFiCommunicationSystem::lastReceivedData = "";
+
 bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
                                                  IPAddress gateway,
                                                  IPAddress subnet) {
@@ -37,6 +39,18 @@ void WiFiCommunicationSystem::handleSample(AsyncWebServerRequest *request) {
   request->send(200, "text/plain", "This is a sample route");
 }
 
+void WiFiCommunicationSystem::handleWebSocketData(void *arg, uint8_t *data,
+                                                  size_t len) {
+  AwsFrameInfo *info = (AwsFrameInfo *)arg;
+  if (info->final && info->index == 0 && info->len == len &&
+      info->opcode == WS_TEXT) {
+    data[len] = 0;
+    lastReceivedData = String((char *)data);
+    Serial.println("Received WebSocket message: " + lastReceivedData);
+    // You can add any additional processing here
+  }
+}
+
 void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
                                                AsyncWebSocketClient *client,
                                                AwsEventType type, void *arg,
@@ -49,11 +63,16 @@ void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
     Serial.println("WebSocket client disconnected");
     break;
   case WS_EVT_DATA:
+    handleWebSocketData(arg, data, len);
     break;
   case WS_EVT_PONG:
   case WS_EVT_ERROR:
     break;
   }
+}
+
+String WiFiCommunicationSystem::getLastReceivedData() {
+  return lastReceivedData;
 }
 
 void WiFiCommunicationSystem::runWebServer() {
