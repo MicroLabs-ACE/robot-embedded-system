@@ -35,8 +35,8 @@ void loop() {
   Serial.println(rightDistance);
   Serial.println();
   delay(1000);
-
   // if (isWithinThreshold(middleDistance)) {
+
   //   leftDistance = getDistance(uSensorLeft);
   //   rightDistance = getDistance(uSensorRight);
 

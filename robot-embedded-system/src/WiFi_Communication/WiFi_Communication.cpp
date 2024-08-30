@@ -1,4 +1,5 @@
 #include "WiFi_Communication.hpp"
+// #include "WiFi_Router.hpp"
 
 bool WiFiCommunication::setStaticIPAddress(IPAddress localIPAddress, IPAddress gateway, IPAddress subnet)
 {
