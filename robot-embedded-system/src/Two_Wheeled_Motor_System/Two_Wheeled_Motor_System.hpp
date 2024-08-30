@@ -10,7 +10,7 @@ class TwoWheeledMotorSystem {
 public:
   TwoWheeledMotorSystem(int leftInput0, int leftInput1, int leftEnable,
                         int rightInput0, int rightInput1, int rightEnable);
-  void control(const std::string &command);
+  void control(const std::string &command, bool isObstacleWithinThreshold);
   void power(bool state);
 
 private:

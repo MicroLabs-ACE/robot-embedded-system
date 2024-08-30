@@ -1,6 +1,7 @@
 #include "WiFi_Communication_System.hpp"
 
-String WiFiCommunicationSystem::lastReceivedData = "";
+std::string WiFiCommunicationSystem::lastReceivedData =
+    ""; // Changed to std::string
 
 bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
                                                  IPAddress gateway,
@@ -45,8 +46,11 @@ void WiFiCommunicationSystem::handleWebSocketData(void *arg, uint8_t *data,
   if (info->final && info->index == 0 && info->len == len &&
       info->opcode == WS_TEXT) {
     data[len] = 0;
-    lastReceivedData = String((char *)data);
-    Serial.println("Received WebSocket message: " + lastReceivedData);
+    lastReceivedData = std::string((char *)data); // Changed to std::string
+    Serial.println(
+        "Received WebSocket message: " +
+        String(lastReceivedData
+                   .c_str())); // Conversion to String for Serial output
     // You can add any additional processing here
   }
 }
@@ -71,7 +75,7 @@ void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
   }
 }
 
-String WiFiCommunicationSystem::getLastReceivedData() {
+std::string WiFiCommunicationSystem::getLastReceivedData() {
   return lastReceivedData;
 }
 

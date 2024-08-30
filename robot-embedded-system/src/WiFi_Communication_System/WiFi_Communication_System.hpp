@@ -6,6 +6,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WiFi.h>
+#include <string>
 
 enum WiFiConnectionType { STATION, ACCESS_POINT };
 
@@ -19,7 +20,7 @@ class WiFiCommunicationSystem {
 public:
   static bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
                           const char *password);
-  static String getLastReceivedData();
+  static std::string getLastReceivedData(); // Changed to std::string
 
 private:
   static bool setStaticIPAddress(IPAddress localIPAddress, IPAddress gateway,
@@ -34,7 +35,7 @@ private:
   static void handleRoot(AsyncWebServerRequest *request);
   static void handleSample(AsyncWebServerRequest *request);
 
-  static String lastReceivedData;
+  static std::string lastReceivedData; // Changed to std::string
 };
 
 #endif // WIFI_COMMUNICATION_SYSTEM_HPP

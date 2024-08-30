@@ -13,18 +13,22 @@ TwoWheeledMotorSystem::TwoWheeledMotorSystem(int leftInput0, int leftInput1,
       rightMotor(rightInput0, rightInput1, rightEnable), level(THREE),
       isOn(false) {}
 
-void TwoWheeledMotorSystem::control(const std::string &command) {
+void TwoWheeledMotorSystem::control(const std::string &command,
+                                    bool isObstacleWithinThreshold) {
   if (!isOn) {
     Serial.println("Power Off");
     return;
   }
 
-  std::string direction = extractDirectionFromCommand(command);
+  std::string direction;
+  if (isObstacleWithinThreshold) {
+    direction = "OO";
+  } else {
+    direction = extractDirectionFromCommand(command);
+  }
   int speed = extractSpeedFromCommand(command);
-  setSpeedLevel(static_cast<SpeedLevel>(speed));
-  
-  Serial.println(speed);
 
+  setSpeedLevel(static_cast<SpeedLevel>(speed));
   if (direction == "OO") { // Origin - No movement
     leftMotor.setMotorData(Stop, ZERO);
     rightMotor.setMotorData(Stop, ZERO);

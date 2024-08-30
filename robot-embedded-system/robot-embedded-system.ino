@@ -4,19 +4,23 @@
 #include "src/Two_Wheeled_Motor_System/Two_Wheeled_Motor_System.hpp"
 #include "src/WiFi_Communication_System/WiFi_Communication_System.hpp"
 
-TwoWheeledMotorSystem motorSystem(18, 19, 21, 25, 26, 27);
-// ObstacleAvoidanceSystem obsAvoidSystem(18, 19, 21, 25, 26, 27);
-// WiFiCommunicationSystem wifiCommSystem;
-// WiFiConnectionType connectionType = WiFiConnectionType::ACCESS_POINT;
-// const char *ssid = "Wall-E";
-// const char *password = "robotics";
+const int INTERVAL_MS = 1000;
 
-std::string command = "N-03";
+TwoWheeledMotorSystem motorSystem(18, 19, 21, 25, 26, 27);
+ObstacleAvoidanceSystem obsAvoidSystem(18, 19, 21, 25, 26, 27);
+WiFiCommunicationSystem wifiCommSystem;
+WiFiConnectionType connectionType = WiFiConnectionType::ACCESS_POINT;
+const char *ssid = "Wall-E";
+const char *password = "robotics";
+
+std::string command;
 
 void setup() {
-  Serial.begin(115200);
-  motorSystem.power(true);
-  motorSystem.control(command);
+  wifiCommSystem.connectWiFi(connectionType, ssid, password);
 }
 
-void loop() {}
+void loop() {
+  command = wifiCommSystem.getLastReceivedData();
+  motorSystem.control(command, obsAvoidSystem.isWithinThreshold());
+  delay(INTERVAL_MS);
+}
