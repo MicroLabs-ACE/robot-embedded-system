@@ -105,8 +105,8 @@ export default function Controls() {
           </div>
         </div>
       </div>
-      <div className=" hidden md:flex w-full flex-col gap-5 items-start">
-        <div className="flex w-full justify-between gap-6 ">
+      <div className="  md:flex w-full flex-col gap-5 items-start">
+        <div className="flex w-full justify-between lg:gap-6 ">
           <button
             onClick={() => setPower(!power)}
             className={
