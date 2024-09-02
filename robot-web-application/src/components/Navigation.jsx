@@ -12,7 +12,7 @@ export default function Navigation() {
     {
       id: "2",
       name: "mdi:gamepad-circle-outline",
-      href: "/directedView",
+      href: "/controller",
     },
     {
       id: "3",
