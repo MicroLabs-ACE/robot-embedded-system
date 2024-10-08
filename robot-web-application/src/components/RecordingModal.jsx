@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { getIntent } from "../utils/getIntent";
 
 export default function RecordingModal({ open, onClose }) {
   const [isRecording, setIsRecording] = useState(false);
@@ -87,11 +88,16 @@ export default function RecordingModal({ open, onClose }) {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onresult = (event) => {
+    recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       setTranscription(transcript);
       setIsTranscribing(false);
-      getIntent(transcript);
+      try {
+        const intentResponse = await getIntent(transcript);
+        setResponse(intentResponse);
+      } catch (error) {
+        console.error("Failed to get intent", error);
+      }
     };
 
     recognition.onerror = (event) => {
@@ -110,99 +116,6 @@ export default function RecordingModal({ open, onClose }) {
 
     recognition.start();
     audioElement.play();
-  };
-
-  const getIntent = async (transcript) => {
-    try {
-      const response = await fetch(
-        "https://api.groq.com/openai/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer <token>`,
-          },
-          body: JSON.stringify({
-            messages: [
-              {
-                role: "system",
-                content: `
-You are a fumigation robot, with the ability to converse, deployed in hospital wards. This means you would be interacting with patients, doctors, nurses and other hospital personnel.
-You are required to respond to requests by each of the these entities.
-You are to first try and decipher based on the request which entity is requesting.
-You are to output your response in form of JSON.
-
-Here are example requests and their corresponding responses:
-
-Request: "i feel like vomiting",
-
-Response:
-{
-    "entity": "patient",
-    "message": "Okay. I would get someone to help you.",
-    "action": "contact_personnel"
-}
-
---------------------------------------------------------------
-
-Request: "i am feeling feverish",
-
-Response:
-{
-    "entity": "patient",
-    "message": "Please stand still while I take your temperature.",
-    "action": "measure_temperature"
-}
-
---------------------------------------------------------------
-
-Request: "excuse me i am having trouble taking my drugs"
-
-Response:
-{
-    "entity": "patient",
-    "message": "Someone will soon be here to help you.",
-    "action": "contact_personnel"
-}
-
---------------------------------------------------------------
-
-Request: "i feel like vomiting"
-
-Response:
-
-{
-    "entity": "patient",
-    "message": "Okay. I would get someone to help you."
-    "action": "contact_personnel"
-}
-
---------------------------------------------------------------
-
-Request: "i am scared about the surgery"
-
-Response:
-{
-    "entity": "patient",
-    "message": "I understand, it's normal to feel anxious. It is a standard procedure and know that you are in the hands of capable doctors.",
-    "action": ""
-}
-`,
-              },
-              {
-                role: "user",
-                content: JSON.stringify(transcript),
-              },
-            ],
-            model: "llama3-8b-8192",
-          }),
-        }
-      );
-      const data = await response.json();
-      setResponse(data.choices[0].message.content);
-    } catch (error) {
-      console.error.apply("Error: ", error);
-    }
   };
 
   return (
@@ -280,21 +193,12 @@ Response:
               </div>
             </div>
           )}
-
-          {transcription && (
-            <div className="mt-4">
-              <h3 className="font-medium mb-2">Transcription:</h3>
-              <p className="text-sm bg-gray-100 p-2 rounded">{transcription}</p>
-            </div>
-          )}
-
-          {response && (
-            <div className="mt-4">
-              <h3 className="font-medium mb-2">Response:</h3>
-              <p className="text-sm bg-gray-100 p-2 rounded">{response}</p>
-            </div>
-          )}
         </div>
+        {response && (
+          <div className="mt-4 p-2 bg-gray-100 rounded-lg">
+            <p>{response}</p>
+          </div>
+        )}
       </div>
     </div>
   );
