@@ -50,15 +50,15 @@ jobs:
           BRANCH_NAME="${BRANCH_NAME:0:255}"
 
           # Check if the branch already exists
-          if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
+          if git ls-remote --exit-code --heads origin "$BRANCH_NAME"; then
             echo "Branch $BRANCH_NAME already exists. Skipping branch creation."
           else
             echo "Creating new branch: $BRANCH_NAME"
             # Create and push the new branch
             git config user.name github-actions
             git config user.email github-actions@github.com
-            git checkout -b $BRANCH_NAME
-            git push origin $BRANCH_NAME
+            git checkout -b "$BRANCH_NAME"
+            git push origin "$BRANCH_NAME"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
