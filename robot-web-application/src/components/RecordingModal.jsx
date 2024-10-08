@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import ModalWrapper from "./ModalWrapper";
+import RecordingControls from "./RecordingControls";
+import AudioPlayer from "./AudioPlayer";
+import TranscriptionDisplay from "./TranscriptionDisplay";
+import ResponseDisplay from "./ResponseDisplay";
+import RecordingIndicator from "./RecordingIndicator";
 import { getIntent } from "../utils/getIntent";
 
 export default function RecordingModal({ open, onClose }) {
@@ -63,14 +69,7 @@ export default function RecordingModal({ open, onClose }) {
     setAudioURL(null);
     setRecordingTime(0);
     setTranscription("");
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
+    setResponse("");
   };
 
   const transcribeAudio = () => {
@@ -88,16 +87,11 @@ export default function RecordingModal({ open, onClose }) {
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onresult = async (event) => {
+    recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setTranscription(transcript);
       setIsTranscribing(false);
-      try {
-        const intentResponse = await getIntent(transcript);
-        setResponse(intentResponse);
-      } catch (error) {
-        console.error("Failed to get intent", error);
-      }
+      getIntent(transcript);
     };
 
     recognition.onerror = (event) => {
@@ -119,61 +113,29 @@ export default function RecordingModal({ open, onClose }) {
   };
 
   return (
-    <div
-      onClick={onClose}
-      className={`fixed inset-0 flex justify-center items-center transition-colors ${
-        open ? "visible bg-black/20" : "invisible"
-      }`}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`
-          bg-white rounded-xl shadow p-6 transition-all w-96
-          ${open ? "scale-100 opacity-100" : "scale-125 opacity-0"}
-        `}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 p-1 rounded-lg text-gray-400 bg-white hover:bg-gray-50 hover:text-gray-600"
-        >
-          <Icon icon="solar:close-square-bold-duotone" />
-        </button>
+    <ModalWrapper open={open} onClose={onClose}>
+      <div className="relative">
         <Icon icon="solar:microphone-outline" color="black" fontSize={20} />
         <div className="mt-4 space-y-4">
-          {isRecording ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-red-500 font-medium">
-                Recording: {formatTime(recordingTime)}
-              </span>
-            </div>
-          ) : audioURL ? (
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Recording complete</span>
-              <span>{formatTime(recordingTime)}</span>
-            </div>
-          ) : null}
+          <RecordingIndicator
+            isRecording={isRecording}
+            recordingTime={recordingTime}
+          />
 
           {!audioURL ? (
-            <button
-              onClick={isRecording ? stopRecording : startRecording}
-              className={`w-full px-4 py-2 rounded-lg ${
-                isRecording
-                  ? "bg-red-500 hover:bg-red-600 text-white"
-                  : "bg-blue-500 hover:bg-blue-600 text-white"
-              }`}
-            >
-              {isRecording ? "Stop Recording" : "Start Recording"}
-            </button>
+            <RecordingControls
+              isRecording={isRecording}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
+              cancelRecording={cancelRecording}
+              isTranscribing={isTranscribing}
+            />
           ) : (
             <div className="space-y-2">
-              <audio
-                src={audioURL}
-                controls
-                className="w-full"
-                onPlay={() => setIsListening(true)}
-                onPause={() => setIsListening(false)}
-                onEnded={() => setIsListening(false)}
+              <AudioPlayer
+                audioURL={audioURL}
+                isListening={isListening}
+                setIsListening={setIsListening}
               />
               <div className="flex space-x-2">
                 <button
@@ -193,13 +155,14 @@ export default function RecordingModal({ open, onClose }) {
               </div>
             </div>
           )}
+
+          {transcription && (
+            <TranscriptionDisplay transcription={transcription} />
+          )}
+
+          {response && <ResponseDisplay response={response} />}
         </div>
-        {response && (
-          <div className="mt-4 p-2 bg-gray-100 rounded-lg">
-            <p>{response}</p>
-          </div>
-        )}
       </div>
-    </div>
+    </ModalWrapper>
   );
 }

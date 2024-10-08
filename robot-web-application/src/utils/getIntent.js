@@ -6,7 +6,7 @@ export const getIntent = async (transcript) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer <token>`, // Replace <token> with your actual token
+          Authorization: `Bearer ${process.env["GROQ_API_KEY"]}`,
         },
         body: JSON.stringify({
           messages: [

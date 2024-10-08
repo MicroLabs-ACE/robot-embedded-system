@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function StatusIndicator({ isRecording, recordingTime }) {
+export default function RecordingIndicator({ isRecording, recordingTime }) {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;

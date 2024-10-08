@@ -8,7 +8,7 @@ export default function App() {
     <>
       <Navigation />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/controller" element={<ControllerPage />} />
       </Routes>
     </>

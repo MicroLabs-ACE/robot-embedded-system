@@ -6,8 +6,8 @@ export default function Navigation() {
   const icons = [
     {
       id: "1",
-      name: "material-symbols:home-outline",
-      href: "/",
+      name: "mdi:robot-outline",
+      href: "/home",
     },
     {
       id: "2",
@@ -30,11 +30,15 @@ export default function Navigation() {
   const location = useLocation();
   const pathname = location.pathname;
 
+  if (pathname === "/") {
+    navigate("/home");
+  }
+
   return (
     <div className="fixed z-10 rounded-3xl bottom-0 py-5 w-full bg-black">
       <div className="flex w-[70%] md:w-[400px] mx-auto justify-between">
         {icons.map((icon) => {
-          const isActive = pathname === icon.href; // Check if the icon is active
+          const isActive = pathname === icon.href;
           return (
             <button
               key={icon.id}
