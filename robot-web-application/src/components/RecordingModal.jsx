@@ -120,7 +120,7 @@ export default function RecordingModal({ open, onClose }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer <token>`,
           },
           body: JSON.stringify({
             messages: [

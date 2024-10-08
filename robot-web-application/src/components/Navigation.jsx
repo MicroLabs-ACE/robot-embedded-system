@@ -17,41 +17,37 @@ export default function Navigation() {
     {
       id: "3",
       name: "basil:chat-outline",
+      href: "/chat",
     },
     {
       id: "4",
       name: "material-symbols:help-outline",
+      href: "/help",
     },
   ];
-  const [activeIcon, setActiveIcon] = useState(0);
+
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
+
   return (
-    <div className="fixed z-10 rounded-3xl  bottom-0 py-5 justify-center w-full left-0 right-0 mx-autop bg-black ">
+    <div className="fixed z-10 rounded-3xl bottom-0 py-5 w-full bg-black">
       <div className="flex w-[70%] md:w-[400px] mx-auto justify-between">
-        {icons.map((icon, index) => {
-          if (pathname == icon.href)
-            return (
-              <button
-                onClick={() => {
-                  // setActiveIcon(index);
-                  navigate(icon.href);
-                }}
-                className=" flex rounded-lg items-center bg-[017AFF] justify-center py-4 px-6 "
-              >
-                <Icon icon={icon.name} color="white" fontSize={18} />
-              </button>
-            );
+        {icons.map((icon) => {
+          const isActive = pathname === icon.href; // Check if the icon is active
           return (
             <button
-              onClick={() => {
-                // setActiveIcon(index);
-                navigate(icon.href);
-              }}
-              className=" flex rounded-lg bg-black  items-center justify-center py-4 px-6 "
+              key={icon.id}
+              onClick={() => icon.href && navigate(icon.href)}
+              className={`flex rounded-lg items-center justify-center py-4 px-6 ${
+                isActive ? "bg-[#017AFF]" : "bg-black"
+              }`}
             >
-              <Icon icon={icon.name} color="#646464" fontSize={18} />
+              <Icon
+                icon={icon.name}
+                color={isActive ? "white" : "#646464"}
+                fontSize={18}
+              />
             </button>
           );
         })}
