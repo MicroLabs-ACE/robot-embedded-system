@@ -1,6 +1,6 @@
 export class MapGraph {
   constructor(length, width) {
-    if (length < 2 || width < 2) {
+    if (length <= 2 || width <= 2) {
       console.log("Length and width must be greater than 2");
       return;
     }
@@ -76,16 +76,22 @@ export class MapGraph {
   }
 
   removeNode(nodeToRemove) {
-    if (!this.isNodeValid(nodeToRemove)) console.log("Invalid node");
-    if (!this.doesNodeExist(nodeToRemove)) console.log("Node does not exist");
+    if (!this.isNodeValid(nodeToRemove)) {
+      console.log("Invalid node");
+      return;
+    }
+    if (!this.doesNodeExist(nodeToRemove)) {
+      console.log("Node does not exist");
+      return;
+    }
 
     const connectedNodes = this.graph[nodeToRemove];
     delete this.graph[nodeToRemove];
 
-    for (const node of Object.keys(connectedNodes)) {
-      let edges = this.graph[node];
-      delete edges[nodeToRemove];
-      this.graph[node] = edges;
+    for (const node in connectedNodes) {
+      if (this.graph[node]) {
+        delete this.graph[node][nodeToRemove];
+      }
     }
   }
 
@@ -95,20 +101,26 @@ export class MapGraph {
     const dx = x1 - x0;
     const dy = y1 - y0;
 
-    let direction;
-    if (dx === 0 && dy === 1) direction = 0;
-    else if (dx === 1 && dy === 1) direction = 45;
-    else if (dx === 1 && dy === 0) direction = 90;
-    else if (dx === 1 && dy === -1) direction = 135;
-    else if (dx === 0 && dy === -1) direction = 180;
-    else if (dx === -1 && dy === -1) direction = 225;
-    else if (dx === -1 && dy === 0) direction = 270;
-    else if (dx === -1 && dy === 1) direction = 315;
+    const directions = {
+      "0,1": 0,
+      "1,1": 45,
+      "1,0": 90,
+      "1,-1": 135,
+      "0,-1": 180,
+      "-1,-1": 225,
+      "-1,0": 270,
+      "-1,1": 315,
+    };
 
-    return direction;
+    return directions[`${dx},${dy}`];
   }
 
   dijkstra(start, end) {
+    if (!this.doesNodeExist(start)) {
+      console.log("Start node does not exist");
+      return [];
+    }
+
     const findLowestCostNode = (costs, processed) => {
       let lowestCost = Infinity;
       let lowestCostNode = null;
@@ -126,7 +138,7 @@ export class MapGraph {
       (node) => node !== start,
     );
     const costs = {};
-    const parents = {};
+    const parents = { [start]: null };
     const processed = [];
 
     nodesExceptStart.forEach((node) => {
@@ -167,6 +179,11 @@ export class MapGraph {
   }
 
   dfs(start) {
+    if (!this.doesNodeExist(start)) {
+      console.log("Start node does not exist");
+      return new Set();
+    }
+
     const stack = [start];
     const visited = new Set();
     visited.add(start);
@@ -186,6 +203,11 @@ export class MapGraph {
   }
 
   bfs(start) {
+    if (!this.doesNodeExist(start)) {
+      console.log("Start node does not exist");
+      return new Set();
+    }
+
     const queue = [start];
     const visited = new Set();
     visited.add(start);
