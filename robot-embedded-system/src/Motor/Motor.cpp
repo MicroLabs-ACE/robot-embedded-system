@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "Motor.hpp"
 
 Motor::Motor(int input0, int input1, int enable) : input0(input0), input1(input1), enable(enable)
@@ -8,8 +7,9 @@ Motor::Motor(int input0, int input1, int enable) : input0(input0), input1(input1
 	pinMode(enable, OUTPUT);
 }
 
-void Motor::setMotorData(MotorRotation rotation, SpeedLevel level)
+void Motor::setMotorData(MotorRotation rotation, int level)
 {
+    assert(level >= 0 && level <= 5);
 	switch (rotation)
 	{
 	case MotorRotation::Stop:
@@ -31,5 +31,5 @@ void Motor::setMotorData(MotorRotation rotation, SpeedLevel level)
 		break;
 	}
 
-	analogWrite(enable, level);
+	analogWrite(enable, (MAX_LEVEL - level) * RANGE);
 }

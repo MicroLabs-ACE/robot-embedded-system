@@ -20,7 +20,7 @@ class WiFiCommunicationSystem {
 public:
   static bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
                           const char *password);
-  static std::string getLastReceivedData(); // Changed to std::string
+  static std::string getLastReceivedData();
 
 private:
   static bool setStaticIPAddress(IPAddress localIPAddress, IPAddress gateway,
@@ -33,9 +33,8 @@ private:
   static void runWebServer();
   static void handleWebSocketData(void *arg, uint8_t *data, size_t len);
   static void handleRoot(AsyncWebServerRequest *request);
-  static void handleSample(AsyncWebServerRequest *request);
 
-  static std::string lastReceivedData; // Changed to std::string
+  static std::string lastReceivedData;
 };
 
 #endif // WIFI_COMMUNICATION_SYSTEM_HPP

@@ -1,7 +1,6 @@
 #include "WiFi_Communication_System.hpp"
 
-std::string WiFiCommunicationSystem::lastReceivedData =
-    ""; // Changed to std::string
+std::string WiFiCommunicationSystem::lastReceivedData = "";
 
 bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
                                                  IPAddress gateway,
@@ -36,22 +35,13 @@ void WiFiCommunicationSystem::handleRoot(AsyncWebServerRequest *request) {
   request->send(200, "application/json", responseString);
 }
 
-void WiFiCommunicationSystem::handleSample(AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "This is a sample route");
-}
-
 void WiFiCommunicationSystem::handleWebSocketData(void *arg, uint8_t *data,
                                                   size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo *)arg;
   if (info->final && info->index == 0 && info->len == len &&
       info->opcode == WS_TEXT) {
     data[len] = 0;
-    lastReceivedData = std::string((char *)data); // Changed to std::string
-    Serial.println(
-        "Received WebSocket message: " +
-        String(lastReceivedData
-                   .c_str())); // Conversion to String for Serial output
-    // You can add any additional processing here
+    lastReceivedData = std::string((char *)data);
   }
 }
 

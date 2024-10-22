@@ -16,11 +16,9 @@ public:
 private:
   std::string extractDirectionFromCommand(const std::string &command);
   int extractSpeedFromCommand(const std::string &command);
-  void setSpeedLevel(SpeedLevel level);
 
   Motor leftMotor;
   Motor rightMotor;
-  SpeedLevel level;
   bool isOn;
   static const std::unordered_map<std::string, std::string> directionMap;
 };

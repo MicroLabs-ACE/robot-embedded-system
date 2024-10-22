@@ -7,20 +7,22 @@
 const int INTERVAL_MS = 1000;
 
 TwoWheeledMotorSystem motorSystem(18, 19, 21, 25, 26, 27);
-ObstacleAvoidanceSystem obsAvoidSystem(18, 19, 21, 25, 26, 27);
+ObstacleAvoidanceSystem obsAvoidSystem(12, 13, 14, 32, 33, 34);
 WiFiCommunicationSystem wifiCommSystem;
 WiFiConnectionType connectionType = WiFiConnectionType::ACCESS_POINT;
-const char *ssid = "Wall-E";
+const char *ssid = "ZeRobot";
 const char *password = "robotics";
 
 std::string command;
 
 void setup() {
+  Serial.begin(115200);
+  motorSystem.power(true);
   wifiCommSystem.connectWiFi(connectionType, ssid, password);
 }
 
 void loop() {
   command = wifiCommSystem.getLastReceivedData();
-  motorSystem.control(command, obsAvoidSystem.isWithinThreshold());
+  motorSystem.control(command, obsAvoidSystem.isWi thinThreshold());
   delay(INTERVAL_MS);
 }
