@@ -7,7 +7,11 @@ const Home = () => {
   return (
     <div className="flex px-[2rem] items-start w-full md:px-0 md:items-center lg:items-stretch justify-center py-28 flex-col-reverse gap-10 lg:gap-0 relative lg:justify-between lg:w-[1000px] min-h-full lg:flex-row ">
       <Controls />
+<<<<<<< HEAD
       <Map />
+=======
+      <Arrow rotation={90} />
+>>>>>>> fea6414b000848f398a6396dd64eebe11453cce4
       <Navigation />
     </div>
   );

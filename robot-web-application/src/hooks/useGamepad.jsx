@@ -27,7 +27,6 @@ export const useGamepad = () => {
     const gamepad = gamepads[0];
 
     if (gamepad) {
-      console.log("connected");
       const newGamepadInfo = {
         connected: true,
         buttonA: gamepad.buttons[0].pressed,
@@ -36,9 +35,9 @@ export const useGamepad = () => {
         buttonY: gamepad.buttons[3].pressed,
         joystickRight: [gamepad.axes[2], gamepad.axes[3]],
         LT: gamepad.buttons[6].pressed,
-        RT: gamepad.buttons[7].pressed,
+        RB: gamepad.buttons[7].pressed,
         LB: gamepad.buttons[4].pressed,
-        RB: gamepad.buttons[5].pressed,
+        RT: gamepad.buttons[5].pressed,
 
         start: gamepad.buttons[9].pressed,
         select: gamepad.buttons[8].pressed,
