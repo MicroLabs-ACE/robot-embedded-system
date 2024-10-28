@@ -37,40 +37,40 @@ void TwoWheeledMotorSystem::control(const std::string &command,
     rightMotor.setMotorData(Stop, 0);
     Serial.println("Origin");
   } else if (direction == "NO") { // North - Forward
-    leftMotor.setMotorData(CW, level);
-    rightMotor.setMotorData(CW, level);
+    leftMotor.setMotorData(CW, speed);
+    rightMotor.setMotorData(CW, speed);
     Serial.println("North");
   } else if (direction == "SO") { // South - Backward
-    leftMotor.setMotorData(AntiCW, level);
-    rightMotor.setMotorData(AntiCW, level);
+    leftMotor.setMotorData(AntiCW, speed);
+    rightMotor.setMotorData(AntiCW, speed);
     Serial.println("South");
   } else if (direction == "OW") { // West - Left - Zero Radius Turning
-    leftMotor.setMotorData(AntiCW, level);
-    rightMotor.setMotorData(CW, level);
+    leftMotor.setMotorData(AntiCW, speed);
+    rightMotor.setMotorData(CW, speed);
     Serial.println("West");
   } else if (direction == "OE") { // East - Right - Zero Radius Turning
-    leftMotor.setMotorData(CW, level);
-    rightMotor.setMotorData(AntiCW, level);
+    leftMotor.setMotorData(CW, speed);
+    rightMotor.setMotorData(AntiCW, speed);
     Serial.println("East");
   } else if (direction ==
              "NW") { // NorthWest - ForwardLeft - Curved Path Turning
-    leftMotor.setMotorData(CW, static_cast<int>(level / 2));
-    rightMotor.setMotorData(CW, level);
+    leftMotor.setMotorData(CW, static_cast<int>(speed / 2));
+    rightMotor.setMotorData(CW, speed);
     Serial.println("NorthWest");
   } else if (direction ==
              "NE") { // NorthEast - ForwardRight - Curved Path Turning
-    leftMotor.setMotorData(CW, level);
-    rightMotor.setMotorData(CW, static_cast<int>(level / 2));
+    leftMotor.setMotorData(CW, speed);
+    rightMotor.setMotorData(CW, static_cast<int>(speed / 2));
     Serial.println("NorthEast");
   } else if (direction ==
              "SW") { // SouthWest - BackwardLeft - Curved Path Turning
-    leftMotor.setMotorData(AntiCW, static_cast<int>(level / 2));
-    rightMotor.setMotorData(AntiCW, level);
+    leftMotor.setMotorData(AntiCW, static_cast<int>(speed / 2));
+    rightMotor.setMotorData(AntiCW, speed);
     Serial.println("SouthWest");
   } else if (direction ==
              "SE") { // SouthEast - BackwardRight - Curved Path Turning
-    leftMotor.setMotorData(AntiCW, level);
-    rightMotor.setMotorData(AntiCW, static_cast<int>(level / 2));
+    leftMotor.setMotorData(AntiCW, speed);
+    rightMotor.setMotorData(AntiCW, static_cast<int>(speed / 2));
     Serial.println("SouthEast");
   }
   Serial.println();

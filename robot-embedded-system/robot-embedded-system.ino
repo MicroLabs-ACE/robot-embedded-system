@@ -19,10 +19,13 @@ void setup() {
   Serial.begin(115200);
   motorSystem.power(true);
   wifiCommSystem.connectWiFi(connectionType, ssid, password);
+  Serial.println("Initialised");
 }
 
 void loop() {
   command = wifiCommSystem.getLastReceivedData();
-  motorSystem.control(command, obsAvoidSystem.isWi thinThreshold());
+  Serial.print("Command: ");
+  Serial.println(command.c_str());
+  motorSystem.control(command, obsAvoidSystem.isWithinThreshold());
   delay(INTERVAL_MS);
 }

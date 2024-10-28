@@ -27,12 +27,9 @@ private:
                                  IPAddress subnet);
   static bool wifiAsStation(const char *ssid, const char *password);
   static bool wifiAsAccessPoint(const char *ssid, const char *password);
-  static void onWebSocketEvent(AsyncWebSocket *server,
-                               AsyncWebSocketClient *client, AwsEventType type,
-                               void *arg, uint8_t *data, size_t len);
   static void runWebServer();
-  static void handleWebSocketData(void *arg, uint8_t *data, size_t len);
   static void handleRoot(AsyncWebServerRequest *request);
+  static void handleCommand(AsyncWebServerRequest *request);
 
   static std::string lastReceivedData;
 };

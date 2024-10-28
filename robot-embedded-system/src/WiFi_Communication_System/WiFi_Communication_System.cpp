@@ -35,34 +35,11 @@ void WiFiCommunicationSystem::handleRoot(AsyncWebServerRequest *request) {
   request->send(200, "application/json", responseString);
 }
 
-void WiFiCommunicationSystem::handleWebSocketData(void *arg, uint8_t *data,
-                                                  size_t len) {
-  AwsFrameInfo *info = (AwsFrameInfo *)arg;
-  if (info->final && info->index == 0 && info->len == len &&
-      info->opcode == WS_TEXT) {
-    data[len] = 0;
-    lastReceivedData = std::string((char *)data);
-  }
-}
-
-void WiFiCommunicationSystem::onWebSocketEvent(AsyncWebSocket *server,
-                                               AsyncWebSocketClient *client,
-                                               AwsEventType type, void *arg,
-                                               uint8_t *data, size_t len) {
-  switch (type) {
-  case WS_EVT_CONNECT:
-    Serial.println("WebSocket client connected");
-    break;
-  case WS_EVT_DISCONNECT:
-    Serial.println("WebSocket client disconnected");
-    break;
-  case WS_EVT_DATA:
-    handleWebSocketData(arg, data, len);
-    break;
-  case WS_EVT_PONG:
-  case WS_EVT_ERROR:
-    break;
-  }
+void WiFiCommunicationSystem::handleCommand(AsyncWebServerRequest *request) {
+  String command = request->arg("command");
+  Serial.println("Received command: " + command);
+  lastReceivedData = command.c_str();
+  request->send(200, "text/plain", "Received command");
 }
 
 std::string WiFiCommunicationSystem::getLastReceivedData() {
@@ -71,14 +48,9 @@ std::string WiFiCommunicationSystem::getLastReceivedData() {
 
 void WiFiCommunicationSystem::runWebServer() {
   static AsyncWebServer webserver(80);
-  static AsyncWebSocket websocket("/ws");
-  websocket.onEvent(onWebSocketEvent);
-  webserver.addHandler(&websocket);
 
-  Route routes[] = {
-      {"/", HTTP_GET, handleRoot},
-      {"/sample", HTTP_GET, handleSample},
-  };
+  Route routes[] = {{"/", HTTP_GET, handleRoot},
+                    {"/", HTTP_POST, handleCommand}};
 
   for (const auto &route : routes) {
     webserver.on(route.path, route.method, route.handler);
