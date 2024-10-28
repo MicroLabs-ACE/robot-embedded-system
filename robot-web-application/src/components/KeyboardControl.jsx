@@ -1,28 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { sendCommand } from "../utils/sendCommand";
 
 export default function KeyboardControl() {
   const [rotation, setRotation] = useState(0);
-  const [isConnected, setIsConnected] = useState(false);
-  const IP_ADDRESS = "http://192.168.4.1";
-
-  const sendCommand = async (northSouth, eastWest) => {
-    const command = `${northSouth}${eastWest}2`;
-    try {
-      const response = await fetch(`${IP_ADDRESS}/command=${command}`, {
-        method: "POST",
-      });
-      if (response.ok) {
-        console.log(`Sent command: ${command}`);
-        setIsConnected(true);
-      } else {
-        console.error("Failed to send command.");
-        setIsConnected(false);
-      }
-    } catch (error) {
-      console.error("Error sending command:", error);
-      setIsConnected(false);
-    }
-  };
 
   const handleKeyPress = (event) => {
     let northSouth = "O";
@@ -42,7 +22,7 @@ export default function KeyboardControl() {
         eastWest = "E";
         break;
       default:
-        return; // Ignore other keys
+        return;
     }
 
     changeRotation(northSouth, eastWest);
@@ -83,7 +63,6 @@ export default function KeyboardControl() {
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
-
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
@@ -99,7 +78,6 @@ export default function KeyboardControl() {
         className="w-[20%]"
         style={{ transform: `rotate(${rotation}deg)` }}
       />
-      <p>{isConnected ? "Connected" : "Not connected"}</p>
     </div>
   );
 }
