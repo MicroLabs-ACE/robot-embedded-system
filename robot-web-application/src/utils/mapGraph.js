@@ -112,7 +112,7 @@ export class MapGraph {
       "-1,1": 315,
     };
 
-    return directions[`${dx},${dy}`];
+    return directions[`${dx}-${dy}`];
   }
 
   dijkstra(start, end) {
