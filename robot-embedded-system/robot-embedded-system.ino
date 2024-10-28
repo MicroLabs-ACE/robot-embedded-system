@@ -23,6 +23,7 @@ void setup() {
 }
 
 void loop() {
+  wifiCommSystem.loop();
   command = wifiCommSystem.getLastReceivedData();
   Serial.print("Command: ");
   Serial.println(command.c_str());
