@@ -1,50 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useGamepad } from "../hooks/useGamepad";
 
 export default function Arrow() {
   const gamepad = useGamepad();
-  const { connected, RT, RB, left, right } = gamepad;
+  const { RT, RB, left, right } = gamepad;
 
   const [rotation, setRotation] = useState(0);
-  const [isWebsocket, setIsWebsocket] = useState(false);
-  const socketRef = useRef(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const IP_ADDRESS = "http://192.168.4.1";
 
-  useEffect(() => {
-    const socket = new WebSocket(`ws://192.168.4.1/ws`);
-    socketRef.current = socket;
-
-    socket.addEventListener("open", () => {
-      setIsWebsocket(true);
-      console.log("Opened websocket");
-    });
-
-    socket.addEventListener("error", (error) => {
-      setIsWebsocket(false);
-      console.error("WebSocket Error:", error);
-    });
-
-    socket.addEventListener("message", (event) => {
-      console.log("Received:", event.data);
-    });
-
-    socket.addEventListener("close", () => {
-      setIsWebsocket(false);
-      console.log("Closed websocket");
-    });
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.close();
+  const sendCommand = async (northSouth, eastWest) => {
+    const command = `${northSouth}${eastWest}2`;
+    try {
+      const response = await fetch(`${IP_ADDRESS}/command=${command}`, {
+        method: "POST",
+      });
+      if (response.ok) {
+        console.log(`Sent command: ${command}`);
+        setIsConnected(true);
+      } else {
+        console.error("Failed to send command.");
+        setIsConnected(false);
       }
-    };
-  }, []);
-
-  const sendCommand = (northSouth, eastWest) => {
-    if (isWebsocket && socketRef.current?.readyState === WebSocket.OPEN) {
-      const command = `${northSouth}${eastWest}2`;
-      socketRef.current.send(command);
-    } else {
-      console.log("Websocket not connected or ready.");
+    } catch (error) {
+      console.error("Error sending command:", error);
+      setIsConnected(false);
     }
   };
 
@@ -107,6 +87,7 @@ export default function Arrow() {
         className="w-[20%]"
         style={{ transform: `rotate(${rotation}deg)` }}
       />
+      <p>{isConnected ? "Connected" : "Not connected"}</p>
     </div>
   );
 }
