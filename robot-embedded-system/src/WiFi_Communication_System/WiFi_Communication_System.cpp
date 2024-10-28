@@ -41,68 +41,69 @@ void WiFiCommunicationSystem::handleRoot(AsyncWebServerRequest *request)
   request->addHeader("Access-Control-Allow-Origin", "*");
   request->addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   request->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
 
-  void WiFiCommunicationSystem::handleCommand(AsyncWebServerRequest * request)
+void WiFiCommunicationSystem::handleCommand(AsyncWebServerRequest *request)
+{
+  String command = request->arg("command");
+  Serial.println("Received command: " + command);
+  lastReceivedData = command.c_str();
+  request->send(200, "text/plain", "Received command");
+  request->addHeader("Access-Control-Allow-Origin", "*");
+  request->addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  request->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
+
+std::string WiFiCommunicationSystem::getLastReceivedData()
+{
+  return lastReceivedData;
+}
+
+void WiFiCommunicationSystem::runWebServer()
+{
+  static AsyncWebServer webserver(80);
+
+  Route routes[] = {
+      {"/", HTTP_GET, handleRoot},
+      {"/", HTTP_POST, handleCommand}};
+
+  for (const auto &route : routes)
   {
-    String command = request->arg("command");
-    Serial.println("Received command: " + command);
-    lastReceivedData = command.c_str();
-    request->send(200, "text/plain", "Received command");
-    request->addHeader("Access-Control-Allow-Origin", "*");
-    request->addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    request->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    webserver.on(route.path, route.method, route.handler);
   }
 
-  std::string WiFiCommunicationSystem::getLastReceivedData()
+  webserver.begin();
+}
+
+bool WiFiCommunicationSystem::connectWiFi(WiFiConnectionType connectionType,
+                                          const char *ssid,
+                                          const char *password)
+{
+  bool result = false;
+  switch (connectionType)
   {
-    return lastReceivedData;
-  }
-
-  void WiFiCommunicationSystem::runWebServer()
+  case STATION:
   {
-    static AsyncWebServer webserver(80);
-
-    Route routes[] = {{"/", HTTP_GET, handleRoot},
-                      {"/", HTTP_POST, handleCommand}};
-
-    for (const auto &route : routes)
+    IPAddress localIPAddress(192, 168, 1, 184);
+    IPAddress gateway(192, 168, 1, 1);
+    IPAddress subnet(255, 255, 0, 0);
+    bool isStaticIPAddress = setStaticIPAddress(localIPAddress, gateway, subnet);
+    if (!isStaticIPAddress)
     {
-      webserver.on(route.path, route.method, route.handler);
+      return false;
     }
-
-    webserver.begin();
+    result = wifiAsStation(ssid, password);
   }
-
-  bool WiFiCommunicationSystem::connectWiFi(WiFiConnectionType connectionType,
-                                            const char *ssid,
-                                            const char *password)
-  {
-    bool result = false;
-    switch (connectionType)
-    {
-    case STATION:
-    {
-      IPAddress localIPAddress(192, 168, 1, 184);
-      IPAddress gateway(192, 168, 1, 1);
-      IPAddress subnet(255, 255, 0, 0);
-      bool isStaticIPAddress =
-          setStaticIPAddress(localIPAddress, gateway, subnet);
-      if (!isStaticIPAddress)
-      {
-        return false;
-      }
-      result = wifiAsStation(ssid, password);
-    }
+  break;
+  case ACCESS_POINT:
+    result = wifiAsAccessPoint(ssid, password);
     break;
-    case ACCESS_POINT:
-      result = wifiAsAccessPoint(ssid, password);
-      break;
-    default:
-      break;
-    }
-    if (result)
-    {
-      runWebServer();
-    }
-    return result;
+  default:
+    break;
   }
+  if (result)
+  {
+    runWebServer();
+  }
+  return result;
+}
