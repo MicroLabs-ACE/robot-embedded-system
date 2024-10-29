@@ -2,7 +2,8 @@
 #define WIFI_COMMUNICATION_SYSTEM_HPP
 
 #include <ArduinoJson.h>
-#include <WebServer.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <WiFi.h>
 #include <string>
 
@@ -10,10 +11,9 @@ enum WiFiConnectionType { STATION, ACCESS_POINT };
 
 class WiFiCommunicationSystem {
 public:
-  static std::string lastReceivedData;
   bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
                    const char *password);
-  std::string getLastReceivedData();
+  std::string getCommand();
   static void loop();
 
 private:
@@ -21,11 +21,13 @@ private:
                           IPAddress subnet);
   bool wifiAsStation(const char *ssid, const char *password);
   bool wifiAsAccessPoint(const char *ssid, const char *password);
-  static void handleRoot();
   static void handleCommand();
-  void runWebServer();
+  void initialiseWebServer();
 
-  static WebServer server;
+  static AsyncWebServer server;
+  static AsyncWebSocket socket;
+
+  static std::string command;
 };
 
 #endif // WIFI_COMMUNICATION_SYSTEM_HPP

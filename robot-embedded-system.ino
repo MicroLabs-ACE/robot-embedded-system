@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
   wifiCommSystem.loop();
-  command = wifiCommSystem.getLastReceivedData();
+  command = wifiCommSystem.getCommand();
   Serial.print("Command: ");
   Serial.println(command.c_str());
   motorSystem.control(command, obsAvoidSystem.isWithinThreshold());

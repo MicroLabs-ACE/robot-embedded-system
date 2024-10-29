@@ -1,7 +1,8 @@
 #include "WiFi_Communication_System.hpp"
 
-std::string WiFiCommunicationSystem::lastReceivedData = "";
-WebServer WiFiCommunicationSystem::server(80);
+std::string WiFiCommunicationSystem::command = "";
+AsyncWebServer WiFiCommunicationSystem::server(80);
+AsyncWebSocket WiFiCommunicationSystem::socket("/");
 
 bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
                                                  IPAddress gateway,
@@ -14,7 +15,7 @@ bool WiFiCommunicationSystem::wifiAsStation(const char *ssid,
   int numberOfRetries = 0;
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED && numberOfRetries < 200) {
+  while (WiFi.status() != WL_CONNECTED && numberOfRetries < 20) {
     delay(1000);
     numberOfRetries++;
   }
@@ -26,36 +27,9 @@ bool WiFiCommunicationSystem::wifiAsAccessPoint(const char *ssid,
   return WiFi.softAP(ssid, password);
 }
 
-void WiFiCommunicationSystem::handleRoot() {
-  IPAddress remoteIP = server.client().remoteIP();
-  DynamicJsonDocument responseJSON(1024);
-  responseJSON["message"] = "Hello, world.";
-  responseJSON["data"] = remoteIP.toString();
-  String responseString;
-  serializeJson(responseJSON, responseString);
-  server.send(200, "application/json", responseString);
-}
-
-void WiFiCommunicationSystem::handleCommand() {
-  if (server.hasArg("command")) {
-    String command = server.arg("command");
-    Serial.println("Received command: " + command);
-    lastReceivedData = command.c_str();
-    server.send(200, "text/plain", "Received command");
-  } else {
-    server.send(400, "text/plain", "Command not found");
-  }
-}
-
-std::string WiFiCommunicationSystem::getLastReceivedData() {  
-  return lastReceivedData;
-}
-
-void WiFiCommunicationSystem::runWebServer() {
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/", HTTP_POST, handleCommand);
-
-  server.enableCORS();
+void WiFiCommunicationSystem::initialiseWebServer() {
+  socket.onEvent(onEvent);
+  server.addHandler(&socket);
   server.begin();
 }
 
@@ -83,9 +57,42 @@ bool WiFiCommunicationSystem::connectWiFi(WiFiConnectionType connectionType,
   }
 
   if (result) {
-    runWebServer();
+    initialiseWebServer();
   }
   return result;
 }
 
-void WiFiCommunicationSystem::loop() { server.handleClient(); }
+void WiFiCommunicationSystem::onEvent(AsyncWebSocket *server,
+                                      AsyncWebSocketClient *client,
+                                      AwsEventType type, void *arg,
+                                      uint8_t *data, size_t len) {
+  switch (type) {
+  case WS_EVT_CONNECT:
+    Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
+                  client->remoteIP().toString().c_str());
+    break;
+  case WS_EVT_DISCONNECT:
+    Serial.printf("WebSocket client #%u disconnected\n", client->id());
+    break;
+  case WS_EVT_DATA:
+    handleWebsocketData(arg, data, len);
+    break;
+  case WS_EVT_PONG:
+  case WS_EVT_ERROR:
+    break;
+  }
+}
+
+void WiFiCommunicationSystem::handleWebsocketData(void *arg, uint8_t *data,
+                                                  size_t len) {
+  AwsFrameInfo *info = (AwsFrameInfo *)arg;
+  if (info->final && info->index == 0 && info->len == len &&
+      info->opcode == WS_TEXT) {
+    data[len] = 0;
+    command = std::string((char *)data);
+  }
+}
+
+std::string WiFiCommunicationSystem::getCommand() { return command; }
+
+void WiFiCommunicationSystem::loop() { socket.cleanupClients(); }
