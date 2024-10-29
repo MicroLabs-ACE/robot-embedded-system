@@ -47,7 +47,7 @@ void WiFiCommunicationSystem::handleCommand() {
   }
 }
 
-std::string WiFiCommunicationSystem::getLastReceivedData() {
+std::string WiFiCommunicationSystem::getLastReceivedData() {  
   return lastReceivedData;
 }
 
