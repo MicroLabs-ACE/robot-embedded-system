@@ -14,18 +14,21 @@ public:
   bool connectWiFi(WiFiConnectionType connectionType, const char *ssid,
                    const char *password);
   std::string getCommand();
-  static void loop();
+  void loop();
 
 private:
   bool setStaticIPAddress(IPAddress localIPAddress, IPAddress gateway,
                           IPAddress subnet);
   bool wifiAsStation(const char *ssid, const char *password);
   bool wifiAsAccessPoint(const char *ssid, const char *password);
-  static void handleCommand();
+  void onWebsocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
+                        AwsEventType type, void *arg, uint8_t *data,
+                        size_t len);
+  void handleWebsocketData(void *arg, uint8_t *data, size_t len);
   void initialiseWebServer();
 
-  static AsyncWebServer server;
-  static AsyncWebSocket socket;
+  AsyncWebServer server{80};
+  AsyncWebSocket socket{"/"};
 
   static std::string command;
 };

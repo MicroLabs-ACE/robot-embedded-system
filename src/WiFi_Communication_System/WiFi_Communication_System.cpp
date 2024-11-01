@@ -1,8 +1,6 @@
 #include "WiFi_Communication_System.hpp"
 
 std::string WiFiCommunicationSystem::command = "";
-AsyncWebServer WiFiCommunicationSystem::server(80);
-AsyncWebSocket WiFiCommunicationSystem::socket("/");
 
 bool WiFiCommunicationSystem::setStaticIPAddress(IPAddress localIPAddress,
                                                  IPAddress gateway,
@@ -28,8 +26,15 @@ bool WiFiCommunicationSystem::wifiAsAccessPoint(const char *ssid,
 }
 
 void WiFiCommunicationSystem::initialiseWebServer() {
-  socket.onEvent(onEvent);
+  socket.onEvent([this](AsyncWebSocket *server, AsyncWebSocketClient *client,
+                        AwsEventType type, void *arg, uint8_t *data,
+                        size_t len) {
+    onWebsocketEvent(server, client, type, arg, data, len);
+  });
   server.addHandler(&socket);
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Hello, World!");
+  });
   server.begin();
 }
 
@@ -62,10 +67,10 @@ bool WiFiCommunicationSystem::connectWiFi(WiFiConnectionType connectionType,
   return result;
 }
 
-void WiFiCommunicationSystem::onEvent(AsyncWebSocket *server,
-                                      AsyncWebSocketClient *client,
-                                      AwsEventType type, void *arg,
-                                      uint8_t *data, size_t len) {
+void WiFiCommunicationSystem::onWebsocketEvent(AsyncWebSocket *server,
+                                               AsyncWebSocketClient *client,
+                                               AwsEventType type, void *arg,
+                                               uint8_t *data, size_t len) {
   switch (type) {
   case WS_EVT_CONNECT:
     Serial.printf("WebSocket client #%u connected from %s\n", client->id(),
