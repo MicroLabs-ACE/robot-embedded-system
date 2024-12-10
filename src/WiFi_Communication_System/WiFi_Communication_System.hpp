@@ -28,7 +28,7 @@ private:
   void initialiseWebServer();
 
   AsyncWebServer server{80};
-  AsyncWebSocket socket{"/"};
+  AsyncWebSocket socket{"/ws"};
 
   static std::string command;
 };
